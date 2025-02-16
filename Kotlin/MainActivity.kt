@@ -1,4 +1,4 @@
-package com.example.cudera
+package com.example.baseconvert
 
 import android.content.Intent
 import android.os.Bundle
@@ -21,15 +21,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.cudera.ui.theme.CuderaTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CuderaTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -56,9 +55,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
-    var username by remember { mutableStateOf("admin") }
-    var password by remember { mutableStateOf("admin123") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var loginMessage by remember { mutableStateOf("") }
+    var isUsernameValid by remember { mutableStateOf(true) }
+    var isPasswordValid by remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
@@ -82,30 +83,42 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
 
             BasicTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    isUsernameValid = username.isNotEmpty()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
+                    .background(if (isUsernameValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 singleLine = true
             )
+            if (!isUsernameValid) {
+                Text(text = "Username cannot be empty", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             BasicTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    isPasswordValid = password.length >= 6
+                },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
+                    .background(if (isPasswordValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true
             )
+            if (!isPasswordValid) {
+                Text(text = "Password must be at least 6 characters", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -138,7 +151,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
             Text(
                 text = loginMessage,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (loginMessage.startsWith("Logged in")) Color.Green else Color.Red
+                color = if (loginMessage.startsWith("Invalid")) Color.Red else Color.Green
             )
         }
     }
@@ -147,7 +160,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    CuderaTheme {
+    BaseConvertTheme {
         LoginScreen({}, {})
     }
 }
