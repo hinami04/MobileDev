@@ -1,5 +1,6 @@
 package com.example.cudera
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,15 +22,28 @@ class ProfileActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ProfileScreen()
+                    ProfileScreen(
+                        onLogoutClick = { navigateToLoginScreen() },
+                        onSettingsClick = { navigateToSettingsScreen() }
+                    )
                 }
             }
         }
     }
+
+    private fun navigateToLoginScreen() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToSettingsScreen() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(onLogoutClick: () -> Unit, onSettingsClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,6 +60,24 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(text = "Email: john_doe@example.com", style = MaterialTheme.typography.bodyLarge)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onLogoutClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Logout")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onSettingsClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Settings")
+        }
     }
 }
 
@@ -53,6 +85,6 @@ fun ProfileScreen() {
 @Composable
 fun ProfileScreenPreview() {
     CuderaTheme {
-        ProfileScreen()
+        ProfileScreen({}, {})
     }
 }
