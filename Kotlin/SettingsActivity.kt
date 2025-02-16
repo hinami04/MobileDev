@@ -1,5 +1,6 @@
 package com.example.cudera
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,15 +22,20 @@ class SettingsActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SettingsScreen()
+                    SettingsScreen { navigateToDeveloperScreen() }
                 }
             }
         }
     }
+
+    private fun navigateToDeveloperScreen() {
+        val intent = Intent(this, DeveloperActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(onAboutDeveloperClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,15 +47,12 @@ fun SettingsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Settings option 1", style = MaterialTheme.typography.bodyLarge)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Settings option 2", style = MaterialTheme.typography.bodyLarge)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Settings option 3", style = MaterialTheme.typography.bodyLarge)
+        Button(
+            onClick = onAboutDeveloperClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "About Developer")
+        }
     }
 }
 
@@ -57,6 +60,6 @@ fun SettingsScreen() {
 @Composable
 fun SettingsScreenPreview() {
     CuderaTheme {
-        SettingsScreen()
+        SettingsScreen {}
     }
 }
