@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -27,7 +28,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen { navigateToRegisterScreen() }
+                    LoginScreen(
+                        onRegisterClick = { navigateToRegisterScreen() },
+                        onLoginSuccess = { navigateToLandingPage() }
+                    )
                 }
             }
         }
@@ -37,12 +41,17 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
     }
+
+    private fun navigateToLandingPage() {
+        val intent = Intent(this, LandingPageActivity::class.java)
+        startActivity(intent)
+    }
 }
 
 @Composable
-fun LoginScreen(onRegisterClick: () -> Unit) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
+    var username by remember { mutableStateOf("admin") }
+    var password by remember { mutableStateOf("admin123") }
     var loginMessage by remember { mutableStateOf("") }
 
     Column(
@@ -62,6 +71,8 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+                .background(Color.LightGray)
+                .padding(8.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -73,12 +84,20 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+                .background(Color.LightGray)
+                .padding(8.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { loginMessage = "Logged in as $username" },
+            onClick = {
+                if (username == "admin" && password == "admin123") {
+                    onLoginSuccess()
+                } else {
+                    loginMessage = "Invalid login credentials"
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Login")
@@ -95,7 +114,11 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = loginMessage, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = loginMessage,
+            style = MaterialTheme.typography.bodyLarge,
+            color = if (loginMessage.startsWith("Logged in")) Color.Green else Color.Red
+        )
     }
 }
 
@@ -103,6 +126,6 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
 @Composable
 fun LoginScreenPreview() {
     CuderaTheme {
-        LoginScreen {}
+        LoginScreen({}, {})
     }
 }
