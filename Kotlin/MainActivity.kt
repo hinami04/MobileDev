@@ -1,4 +1,4 @@
-package com.example.baseconvert
+package com.example.baseconverter
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,13 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.baseconvert.ui.theme.BaseConvertTheme
+import com.example.baseconverter.ui.theme.BaseConverterTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConvertTheme {
+            BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
+    //add the register activity
     private fun navigateToRegisterScreen() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
@@ -160,7 +160,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    BaseConvertTheme {
+    BaseConverterTheme {
         LoginScreen({}, {})
     }
 }
