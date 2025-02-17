@@ -1,15 +1,10 @@
-package com.example.baseconvert
+package com.example.baseconverter
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -18,191 +13,151 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconvert.ui.theme.BaseConvertTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.baseconverter.ui.theme.BaseConverterTheme
 
-class ProfileActivity : ComponentActivity() {
+class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConvertTheme {
+            BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ProfileScreen(
-                        onLogoutConfirmed = { navigateToLoginScreen() },
-                        onSettingsClick = { navigateToSettingsScreen() }
-                    )
+                    RegisterScreen()
                 }
             }
         }
     }
-
-    private fun navigateToLoginScreen() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    private fun navigateToSettingsScreen() {
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
-    }
 }
 
 @Composable
-fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
-    var username by remember { mutableStateOf("john_doe") }
-    var email by remember { mutableStateOf("john_doe@example.com") }
+fun RegisterScreen() {
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isEditing by remember { mutableStateOf(false) }
-    var showLogoutDialog by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
+    var registerMessage by remember { mutableStateOf("") }
+    var isUsernameValid by remember { mutableStateOf(true) }
+    var isPasswordValid by remember { mutableStateOf(true) }
+    var isEmailValid by remember { mutableStateOf(true) }
 
-    if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Logout Confirmation") },
-            text = { Text("Are you sure you want to logout?") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showLogoutDialog = false
-                        onLogoutConfirmed()
-                    }
-                ) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = { showLogoutDialog = false }
-                ) {
-                    Text("No")
-                }
-            }
-        )
-    }
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(color = MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = "Profile", style = MaterialTheme.typography.headlineSmall)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_cat), // Replace with your drawable resource
-            contentDescription = "Profile Picture",
+        Column(
             modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .background(Color.Gray),
-            contentScale = ContentScale.Crop
-        )
+                .fillMaxWidth()
+                .padding(32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Register", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        if (isEditing) {
             BasicTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    isUsernameValid = username.isNotEmpty()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
+                    .background(if (isUsernameValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            BasicTextField(
-                value = email,
-                onValueChange = { email = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
-                    .padding(12.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                singleLine = true
-            )
+            if (!isUsernameValid) {
+                Text(text = "Username cannot be empty", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             BasicTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    isPasswordValid = password.length >= 6
+                },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
+                    .background(if (isPasswordValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true
             )
+            if (!isPasswordValid) {
+                Text(text = "Password must be at least 6 characters", color = Color.Red, fontSize = 12.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BasicTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    isEmailValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (isEmailValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
+                    .padding(12.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                singleLine = true
+            )
+            if (!isEmailValid) {
+                Text(text = "Invalid email address", color = Color.Red, fontSize = 12.sp)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { isEditing = false },
+                onClick = {
+                    if (isUsernameValid && isPasswordValid && isEmailValid) {
+                        registerMessage = "Registration successful"
+                    } else {
+                        registerMessage = "Please fill in all fields correctly"
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "Save", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = "Register", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
             }
-        } else {
-            Text(text = "Username: $username", style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Email: $email", style = MaterialTheme.typography.bodyLarge)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { isEditing = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text(text = "Edit Profile", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { showLogoutDialog = true },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Logout")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onSettingsClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Settings")
+            Text(
+                text = registerMessage,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (registerMessage.startsWith("Registration")) Color.Green else Color.Red
+            )
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview() {
-    BaseConvertTheme {
-        ProfileScreen({}, {})
+fun RegisterScreenPreview() {
+    BaseConverterTheme {
+        RegisterScreen()
     }
 }
