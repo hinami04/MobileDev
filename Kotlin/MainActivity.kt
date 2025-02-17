@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = Color(0xFF98FB98) // Pale Green
                 ) {
                     LoginScreen(
                         onRegisterClick = { navigateToRegisterScreen() },
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    //add the register activity
+
     private fun navigateToRegisterScreen() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
@@ -64,7 +64,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(Color(0xFF90EE90)), // Light Green
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -72,12 +72,12 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                 .fillMaxWidth()
                 .padding(32.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
+                .background(Color(0xFF3CB371)) // Medium Sea Green
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Login", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = "Login", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF2E8B57)) // Sea Green
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -90,7 +90,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (isUsernameValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
+                    .background(if (isUsernameValid) Color(0xFF90EE90) else Color(0xFFFFA07A)) // Light Green or Light Salmon for invalid input
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 singleLine = true
@@ -111,7 +111,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (isPasswordValid) Color.LightGray else Color.Red.copy(alpha = 0.3f))
+                    .background(if (isPasswordValid) Color(0xFF90EE90) else Color(0xFFFFA07A)) // Light Green or Light Salmon for invalid input
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true
@@ -131,10 +131,10 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)), // Sea Green
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "Login", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = "Login", fontSize = 18.sp, color = Color(0xFF98FB98)) // Pale Green
             }
 
             Spacer(modifier = Modifier.height(16.dp))
