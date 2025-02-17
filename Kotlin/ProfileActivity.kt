@@ -1,4 +1,4 @@
-package com.example.baseconvert
+package com.example.baseconverter
 
 import android.content.Intent
 import android.os.Bundle
@@ -25,13 +25,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconvert.ui.theme.BaseConvertTheme
+import com.example.baseconverter.ui.theme.BaseConverterTheme
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConvertTheme {
+            BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -102,7 +102,7 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.ic_cat), // Replace with your drawable resource
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),//replace this with another picture
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
@@ -202,7 +202,7 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    BaseConvertTheme {
+    BaseConverterTheme {
         ProfileScreen({}, {})
     }
 }
