@@ -1,4 +1,4 @@
-package com.example.baseconvert
+package com.example.baseconverter
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,13 +18,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.baseconvert.ui.theme.BaseConvertTheme
+import com.example.baseconverter.ui.theme.BaseConverterTheme
 
 class DeveloperActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConvertTheme {
+            BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -50,7 +50,7 @@ fun DeveloperScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         TeamMember(
-            profileImage = R.drawable.ic_cat, // Replace with your drawable resource
+            profileImage = R.drawable.ic_launcher_foreground, // Replace with another picture because this is from my laptop
             name = "Cudera",
             bio = "A passionate developer with a knack for creating intuitive user interfaces and enhancing user experiences.",
             funFact = "Loves mountain biking and has a hidden talent for playing the guitar!"
@@ -59,7 +59,7 @@ fun DeveloperScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         TeamMember(
-            profileImage = R.drawable.ic_cat, // Replace with your drawable resource
+            profileImage = R.drawable.ic_launcher_foreground, //also replace this
             name = "Daal",
             bio = "An experienced backend developer who thrives on solving complex problems and optimizing performance.",
             funFact = "Has a black belt in martial arts and is a coffee connoisseur."
@@ -93,7 +93,7 @@ fun TeamMember(profileImage: Int, name: String, bio: String, funFact: String) {
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .background(Color.Gray),
+                .background(Color.Green),//change to dark green
             contentScale = ContentScale.Crop
         )
 
@@ -119,7 +119,7 @@ fun TeamMember(profileImage: Int, name: String, bio: String, funFact: String) {
 @Preview(showBackground = true)
 @Composable
 fun DeveloperScreenPreview() {
-    BaseConvertTheme {
+    BaseConverterTheme {
         DeveloperScreen()
     }
 }
