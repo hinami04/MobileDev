@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,13 +18,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.baseconverter.ui.theme.BaseConverterTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 class DeveloperActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConverterTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -45,35 +45,35 @@ fun DeveloperScreen() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Meet the Team", style = MaterialTheme.typography.headlineSmall)
+        Text(text = "Meet the Team", style = MaterialTheme.typography.headlineSmall, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TeamMember(
-            profileImage = R.drawable.ic_launcher_foreground, // Replace with another picture because this is from my laptop
-            name = "Cudera",
-            bio = "A passionate developer with a knack for creating intuitive user interfaces and enhancing user experiences.",
-            funFact = "Loves mountain biking and has a hidden talent for playing the guitar!"
+            profileImage = R.drawable.ic_cat, // Replace with your drawable resource
+            name = "Cudera, Xianne Jewel S.",
+            bio = "A 'fake it till you make it' girly and runs by the motto 'it is what it is'.",
+            funFact = "Loves sleeping and has a hidden talent for playing the guitar!"
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TeamMember(
-            profileImage = R.drawable.ic_launcher_foreground, //also replace this
-            name = "Daal",
-            bio = "An experienced backend developer who thrives on solving complex problems and optimizing performance.",
+            profileImage = R.drawable.ic_cat, // Replace with your drawable resource
+            name = "Daal, Wyben C.",
+            bio = "An experienced frontend developer who thrives on solving complex problems and optimizing performance.",
             funFact = "Has a black belt in martial arts and is a coffee connoisseur."
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text(text = "Team Vision", style = MaterialTheme.typography.headlineSmall)
+        Text(text = "Team Vision", style = MaterialTheme.typography.headlineSmall, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Our team is dedicated to building innovative and user-friendly solutions that make a difference in people's lives. We believe in continuous learning, collaboration, and striving for excellence in everything we do.",
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge, color = Color(0xFF0B5345),
             textAlign = TextAlign.Center
         )
     }
@@ -93,17 +93,17 @@ fun TeamMember(profileImage: Int, name: String, bio: String, funFact: String) {
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .background(Color.Green),//change to dark green
+                .background(Color.Gray),
             contentScale = ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = name, style = MaterialTheme.typography.headlineSmall)
+        Text(text = name, style = MaterialTheme.typography.headlineSmall, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = bio, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        Text(text = bio, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -119,7 +119,7 @@ fun TeamMember(profileImage: Int, name: String, bio: String, funFact: String) {
 @Preview(showBackground = true)
 @Composable
 fun DeveloperScreenPreview() {
-    BaseConverterTheme {
+    BaseConvertTheme {
         DeveloperScreen()
     }
 }
