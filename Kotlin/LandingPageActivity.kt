@@ -1,4 +1,4 @@
-package com.example.baseconvert
+package com.example.baseconverter
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -18,18 +20,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconvert.ui.theme.BaseConvertTheme
+import com.example.baseconverter.ui.theme.BaseConverterTheme
+import java.util.*
+
+// Custom colors from your theme
+val MintGreen = Color(0xFF98FB98)  // Pale green
+val LightMint = Color(0xFF90EE90)  // Light green
+val MediumSeaGreen = Color(0xFF3CB371)  // Medium sea green
+val DarkSeaGreen = Color(0xFF2E8B57)  // Dark sea green
+val LightSalmon = Color(0xFFFFA07A)  // Light salmon
 
 class LandingPageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConvertTheme {
+            BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // Get the username from the Intent
+                    val username = intent.getStringExtra("logged_in_user") ?: "User"
                     LandingPage(
+                        username = username,
                         onProfileClick = { navigateToProfileScreen() },
                         onSettingsClick = { navigateToSettingsScreen() }
                     )
@@ -51,132 +64,276 @@ class LandingPageActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingPage(onProfileClick: () -> Unit, onSettingsClick: () -> Unit) {
+fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: () -> Unit) {
+    // Determine the time-based greeting
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val greeting = when (currentHour) {
+        in 5..11 -> "Good morning"
+        in 12..16 -> "Good afternoon"
+        else -> "Good evening"
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "BaseConvert", color = Color.White) }, //pwede butngan ug icon or logo dira left sa name sa app?
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0B5345))
+                title = { Text(text = "$greeting, $username", color = Color.White) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MediumSeaGreen // Darker green for the top bar
+                )
             )
         },
         bottomBar = {
             BottomNavigationBar(onSettingsClick = onSettingsClick)
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            Text(
-                text = "Welcome to BaseConvert",
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
-
-            Text(
-                text = "Your one-stop solution for all conversion needs",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Button(
-                onClick = onProfileClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0B5345))
-            ) {
-                Text(text = "Go to Profile", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
+            // Welcome Section (Large top box)
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth() // Ensure full screen width
+                        .height(200.dp)
+                        .background(MintGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Welcome to BaseConvert",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                color = DarkSeaGreen // Dark green for emphasis
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = "Your one-stop solution for all conversion needs",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MediumSeaGreen // Medium green for readability
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        Button(
+                            onClick = onProfileClick,
+                            modifier = Modifier.padding(top = 16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MediumSeaGreen // Button matches top bar color
+                            )
+                        ) {
+                            Text(
+                                text = "Go to Profile",
+                                fontSize = 16.sp,
+                                color = Color.White // White text for contrast
+                            )
+                        }
+                    }
+                }
             }
 
-            FeaturesSection()
-            TestimonialsSection()
-            ContactUsSection()
+            // Calculator Section (Centered, single box)
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth() // Ensure full screen width
+                        .height(120.dp)
+                        .background(LightMint.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Calculator",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                color = DarkSeaGreen // Dark green for headings
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = "Convert from decimal to hexadecimal!",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MediumSeaGreen // Medium green for body text
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                        Button(
+                            onClick = { /* Navigate to calculator */ },
+                            modifier = Modifier.padding(top = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MediumSeaGreen // Consistent button color
+                            )
+                        ) {
+                            Text(
+                                text = "Start Converting",
+                                fontSize = 14.sp,
+                                color = Color.White // White text for contrast
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Daily Challenges & Testimonials Row
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Daily Challenges
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text(
+                                text = "Daily Challenges",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    color = DarkSeaGreen // Dark green for headings
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "Test your skills!",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MediumSeaGreen // Medium green for body text
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    // Testimonials
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text(
+                                text = "Testimonials",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    color = DarkSeaGreen // Dark green for headings
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "\"Best conversion app!\"",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MediumSeaGreen // Medium green for body text
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Conversion History & Contact Us Row
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Conversion History
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text(
+                                text = "History",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    color = DarkSeaGreen // Dark green for headings
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "Recent conversions",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MediumSeaGreen // Medium green for body text
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    // Contact Us
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text(
+                                text = "Contact Us",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    color = DarkSeaGreen // Dark green for headings
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "support@baseconvert.com",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MediumSeaGreen // Medium green for body text
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun FeaturesSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(text = "Features", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345))
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "• Easy conversion between various units", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "• User-friendly interface", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "• Real-time conversion results", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "• Customizable settings", style = MaterialTheme.typography.bodyLarge)
-    }
-}
-
-@Composable
-fun TestimonialsSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(text = "Testimonials", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345))
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "\"BaseConvert is the best conversion app I've ever used!\"", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
-        Text(text = "- User A", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "\"The user interface is so intuitive and easy to use. Highly recommended!\"", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
-        Text(text = "- User B", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-    }
-}
-
-@Composable
-fun ContactUsSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(text = "Contact Us", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345))
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "Email: support@baseconvert.com", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Phone: +1 123 456 7890", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Address: 123 BaseConvert Street, City, Country", style = MaterialTheme.typography.bodyLarge)
-    }
-}
-
-@Composable
 fun BottomNavigationBar(onSettingsClick: () -> Unit) {
-    NavigationBar {
+    NavigationBar(
+        containerColor = DarkSeaGreen // Dark sea green for the bottom bar
+    ) {
         NavigationBarItem(
             selected = true,
             onClick = { },
-            icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-            label = { Text("Home") }
+            icon = { Icon(Icons.Filled.Home, contentDescription = "Home", tint = Color.White) },
+            label = { Text("Home", color = Color.White) }
         )
         NavigationBarItem(
             selected = false,
             onClick = onSettingsClick,
-            icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
-            label = { Text("Settings") }
+            icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White) },
+            label = { Text("Settings", color = Color.White) }
         )
     }
 }
@@ -184,7 +341,7 @@ fun BottomNavigationBar(onSettingsClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LandingPagePreview() {
-    BaseConvertTheme {
-        LandingPage({}, {})
+    BaseConverterTheme {
+        LandingPage(username = "User", {}, {}) // Default username for preview
     }
 }
