@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.content.Intent
 import android.os.Bundle
@@ -18,13 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconverter.ui.theme.BaseConverterTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 class LandingPageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConverterTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -55,8 +55,8 @@ fun LandingPage(onProfileClick: () -> Unit, onSettingsClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "BaseConvert", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                title = { Text(text = "BaseConvert", color = Color.White) }, //pwede butngan ug icon or logo dira left sa name sa app?
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0B5345))
             )
         },
         bottomBar = {
@@ -89,7 +89,7 @@ fun LandingPage(onProfileClick: () -> Unit, onSettingsClick: () -> Unit) {
             Button(
                 onClick = onProfileClick,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0B5345))
             ) {
                 Text(text = "Go to Profile", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
             }
@@ -110,7 +110,7 @@ fun FeaturesSection() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "Features", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        Text(text = "Features", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -130,7 +130,7 @@ fun TestimonialsSection() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "Testimonials", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        Text(text = "Testimonials", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -153,7 +153,7 @@ fun ContactUsSection() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "Contact Us", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        Text(text = "Contact Us", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345))
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -184,7 +184,7 @@ fun BottomNavigationBar(onSettingsClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LandingPagePreview() {
-    BaseConverterTheme {
+    BaseConvertTheme {
         LandingPage({}, {})
     }
 }
