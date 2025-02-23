@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.content.Intent
 import android.os.Bundle
@@ -25,13 +25,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconverter.ui.theme.BaseConverterTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConverterTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -102,7 +102,7 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),//replace this with another picture
+            painter = painterResource(id = R.drawable.ic_cat), // Replace with your drawable resource
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
@@ -170,10 +170,11 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            //get rid of this, instead, put the pencil icon to indicate edit
             Button(
                 onClick = { isEditing = true },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0B5345))
             ) {
                 Text(text = "Edit Profile", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
             }
@@ -181,6 +182,7 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //can log out be in the settings icon?
         Button(
             onClick = { showLogoutDialog = true },
             modifier = Modifier.fillMaxWidth()
@@ -190,6 +192,7 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //so to say, this should be an icon, I'll think of other things to put inside the profile
         Button(
             onClick = onSettingsClick,
             modifier = Modifier.fillMaxWidth()
@@ -202,7 +205,7 @@ fun ProfileScreen(onLogoutConfirmed: () -> Unit, onSettingsClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    BaseConverterTheme {
+    BaseConvertTheme {
         ProfileScreen({}, {})
     }
 }
