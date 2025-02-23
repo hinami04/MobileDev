@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,13 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.baseconverter.ui.theme.BaseConverterTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConverterTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF98FB98) // Pale Green
@@ -64,7 +64,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF90EE90)), // Light Green
+            .background(Color(0xFF229954)), // Light Green
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -72,12 +72,12 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                 .fillMaxWidth()
                 .padding(32.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF3CB371)) // Medium Sea Green
+                .background(MaterialTheme.colorScheme.surface)// Medium Sea Green
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Login", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF2E8B57)) // Sea Green
+            Text(text = "Login", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF0B5345)) // Sea Green
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -90,7 +90,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (isUsernameValid) Color(0xFF90EE90) else Color(0xFFFFA07A)) // Light Green or Light Salmon for invalid input
+                    .background(if (isUsernameValid) Color.LightGray else Color(0xFFFFA07A)) // Light Green or Light Salmon for invalid input
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 singleLine = true
@@ -111,7 +111,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (isPasswordValid) Color(0xFF90EE90) else Color(0xFFFFA07A)) // Light Green or Light Salmon for invalid input
+                    .background(if (isPasswordValid) Color.LightGray else Color(0xFFFFA07A)) // Light Green or Light Salmon for invalid input
                     .padding(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true
@@ -131,10 +131,10 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)), // Sea Green
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0B5345)), // Sea Green
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "Login", fontSize = 18.sp, color = Color(0xFF98FB98)) // Pale Green
+                Text(text = "Login", fontSize = 18.sp, color = Color.White) // Pale Green
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -160,7 +160,7 @@ fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    BaseConverterTheme {
+    BaseConvertTheme {
         LoginScreen({}, {})
     }
 }
