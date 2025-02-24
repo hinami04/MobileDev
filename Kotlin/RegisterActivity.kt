@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,11 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.baseconverter.ui.theme.BaseConverterTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 import kotlinx.coroutines.launch
 
 class RegisterActivity : ComponentActivity() {
@@ -31,7 +32,7 @@ class RegisterActivity : ComponentActivity() {
         databaseManager = DatabaseManager(this) // Initialize the database manager
 
         setContent {
-            BaseConverterTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -59,7 +60,7 @@ class RegisterActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.primary),
+                .background(color = Color(0xFF58d68d)),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -72,7 +73,7 @@ class RegisterActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Register", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+                Text(text = "Register", style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold), color = Color(0xFF0B5345))
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -262,7 +263,7 @@ class RegisterActivity : ComponentActivity() {
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0B5345)),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(text = "Register", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
@@ -283,7 +284,7 @@ class RegisterActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
-    BaseConverterTheme {
+    BaseConvertTheme {
         RegisterActivity().RegisterScreen()
     }
 }
