@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,29 +17,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconverter.ui.theme.BaseConverterTheme
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 import java.util.*
 
 // Custom colors from your theme
-val MintGreen = Color(0xFF98FB98)  // Pale green
-val LightMint = Color(0xFF90EE90)  // Light green
-val MediumSeaGreen = Color(0xFF3CB371)  // Medium sea green
-val DarkSeaGreen = Color(0xFF2E8B57)  // Dark sea green
-val LightSalmon = Color(0xFFFFA07A)  // Light salmon
+val MintGreen = Color(0xFF98FB98)
+val LightMint = Color(0xFF90EE90)
+val MediumSeaGreen = Color(0xFF3CB371)
+val DarkGreen = Color(0xFF0B5345)
 
 class LandingPageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConverterTheme {
+            BaseConvertTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Get the username from the Intent
+
                     val username = intent.getStringExtra("logged_in_user") ?: "User"
                     LandingPage(
                         username = username,
@@ -78,7 +78,7 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
             TopAppBar(
                 title = { Text(text = "$greeting, $username", color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MediumSeaGreen // Darker green for the top bar
+                    containerColor = DarkGreen
                 )
             )
         },
@@ -94,11 +94,11 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            // Welcome Section (Large top box)
+
             item {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth() // Ensure full screen width
+                        .fillMaxWidth()
                         .height(200.dp)
                         .background(MintGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
                     contentAlignment = Alignment.Center
@@ -110,14 +110,15 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                         Text(
                             text = "Welcome to BaseConvert",
                             style = MaterialTheme.typography.headlineMedium.copy(
-                                color = DarkSeaGreen // Dark green for emphasis
+                                color = DarkGreen,
+                                        fontWeight = FontWeight.Bold
                             ),
                             textAlign = TextAlign.Center
                         )
                         Text(
                             text = "Your one-stop solution for all conversion needs",
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                color = MediumSeaGreen // Medium green for readability
+                                color = MediumSeaGreen
                             ),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(top = 8.dp)
@@ -126,24 +127,24 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                             onClick = onProfileClick,
                             modifier = Modifier.padding(top = 16.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MediumSeaGreen // Button matches top bar color
+                                containerColor = DarkGreen
                             )
                         ) {
                             Text(
                                 text = "Go to Profile",
                                 fontSize = 16.sp,
-                                color = Color.White // White text for contrast
+                                color = Color.White
                             )
                         }
                     }
                 }
             }
 
-            // Calculator Section (Centered, single box)
+
             item {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth() // Ensure full screen width
+                        .fillMaxWidth()
                         .height(120.dp)
                         .background(LightMint.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
                     contentAlignment = Alignment.Center
@@ -155,14 +156,14 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                         Text(
                             text = "Calculator",
                             style = MaterialTheme.typography.headlineSmall.copy(
-                                color = DarkSeaGreen // Dark green for headings
+                                color = DarkGreen
                             ),
                             textAlign = TextAlign.Center
                         )
                         Text(
                             text = "Convert from decimal to hexadecimal!",
                             style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MediumSeaGreen // Medium green for body text
+                                color = MediumSeaGreen
                             ),
                             textAlign = TextAlign.Center
                         )
@@ -170,31 +171,31 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                             onClick = { /* Navigate to calculator */ },
                             modifier = Modifier.padding(top = 8.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MediumSeaGreen // Consistent button color
+                                containerColor = DarkGreen
                             )
                         ) {
                             Text(
                                 text = "Start Converting",
                                 fontSize = 14.sp,
-                                color = Color.White // White text for contrast
+                                color = Color.White
                             )
                         }
                     }
                 }
             }
 
-            // Daily Challenges & Testimonials Row
+
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Daily Challenges
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(100.dp)
-                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                            .background(LightMint.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -204,26 +205,26 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                             Text(
                                 text = "Daily Challenges",
                                 style = MaterialTheme.typography.headlineSmall.copy(
-                                    color = DarkSeaGreen // Dark green for headings
+                                    color = DarkGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = "Test your skills!",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MediumSeaGreen // Medium green for body text
+                                    color = MediumSeaGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
 
-                    // Testimonials
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(100.dp)
-                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                            .background(LightMint.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -233,14 +234,14 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                             Text(
                                 text = "Testimonials",
                                 style = MaterialTheme.typography.headlineSmall.copy(
-                                    color = DarkSeaGreen // Dark green for headings
+                                    color = DarkGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = "\"Best conversion app!\"",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MediumSeaGreen // Medium green for body text
+                                    color = MediumSeaGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
@@ -249,18 +250,18 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                 }
             }
 
-            // Conversion History & Contact Us Row
+
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Conversion History
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(100.dp)
-                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                            .background(LightMint.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -270,26 +271,26 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                             Text(
                                 text = "History",
                                 style = MaterialTheme.typography.headlineSmall.copy(
-                                    color = DarkSeaGreen // Dark green for headings
+                                    color = DarkGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = "Recent conversions",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MediumSeaGreen // Medium green for body text
+                                    color = MediumSeaGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
 
-                    // Contact Us
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .height(100.dp)
-                            .background(DarkSeaGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)), // Rounded corners
+                            .background(LightMint.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -299,14 +300,14 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
                             Text(
                                 text = "Contact Us",
                                 style = MaterialTheme.typography.headlineSmall.copy(
-                                    color = DarkSeaGreen // Dark green for headings
+                                    color = DarkGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = "support@baseconvert.com",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MediumSeaGreen // Medium green for body text
+                                    color = MediumSeaGreen
                                 ),
                                 textAlign = TextAlign.Center
                             )
@@ -321,7 +322,7 @@ fun LandingPage(username: String, onProfileClick: () -> Unit, onSettingsClick: (
 @Composable
 fun BottomNavigationBar(onSettingsClick: () -> Unit) {
     NavigationBar(
-        containerColor = DarkSeaGreen // Dark sea green for the bottom bar
+        containerColor = DarkGreen
     ) {
         NavigationBarItem(
             selected = true,
@@ -341,7 +342,7 @@ fun BottomNavigationBar(onSettingsClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LandingPagePreview() {
-    BaseConverterTheme {
-        LandingPage(username = "User", {}, {}) // Default username for preview
+    BaseConvertTheme {
+        LandingPage(username = "User", {}, {})
     }
 }
