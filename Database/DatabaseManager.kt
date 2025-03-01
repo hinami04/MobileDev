@@ -94,6 +94,28 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
+    // DatabaseManager.kt
+    fun getUserDetails(username: String): Pair<String, String>? {
+        val db = readableDatabase
+        var cursor: android.database.Cursor? = null
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_USERNAME, $COLUMN_EMAIL FROM $TABLE_USERS WHERE $COLUMN_USERNAME = ?",
+                arrayOf(username)
+            )
+            return if (cursor.moveToFirst()) {
+                val userName = cursor.getString(0)
+                val email = cursor.getString(1)
+                Pair(userName, email)
+            } else {
+                null
+            }
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+    }
+
     // Check if username or email already exists
     fun userExists(username: String, email: String): Pair<Boolean, Boolean> {
         val db = readableDatabase
