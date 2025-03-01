@@ -37,13 +37,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        databaseManager = DatabaseManager(this) // Initialize the database manager
+        databaseManager = DatabaseManager(this)
 
         setContent {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFF98FB98) // Pale Green
+                    color = Color(0xFF98FB98)
                 ) {
                     LoginScreen(
                         onRegisterClick = { navigateToRegisterScreen() },
@@ -60,9 +60,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun navigateToLandingPage(username: String) {
-        val intent = Intent(this, LandingPageActivity::class.java)
-        intent.putExtra("logged_in_user", username)
+        val intent = Intent(this, LandingPageActivity::class.java).apply {
+            putExtra("logged_in_user", username)
+        }
         startActivity(intent)
+        finish()
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -78,14 +80,12 @@ class MainActivity : ComponentActivity() {
         val keyboardController = LocalSoftwareKeyboardController.current
         val scope = rememberCoroutineScope()
 
-        // Background gradient effect with the same colors
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF90EE90)), // Light Green
+                .background(Color(0xFF90EE90)),
             contentAlignment = Alignment.Center
         ) {
-            // App title at the top
             Text(
                 text = "Base Converter",
                 modifier = Modifier
@@ -93,20 +93,15 @@ class MainActivity : ComponentActivity() {
                     .padding(top = 48.dp),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF2E8B57) // Sea Green
+                color = Color(0xFF2E8B57)
             )
 
-            // Login card
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF3CB371) // Medium Sea Green
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                ),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF3CB371)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
@@ -116,7 +111,6 @@ class MainActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Login header
                     Text(
                         text = "Welcome Back",
                         style = MaterialTheme.typography.headlineMedium,
@@ -132,17 +126,13 @@ class MainActivity : ComponentActivity() {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Username field with improved label
                     Column {
                         Text(
                             text = "Username",
                             color = Color.White,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp),
+                            modifier = Modifier.padding(bottom = 4.dp),
                             fontSize = 14.sp
                         )
-
                         OutlinedTextField(
                             value = username,
                             onValueChange = {
@@ -170,7 +160,6 @@ class MainActivity : ComponentActivity() {
                             shape = RoundedCornerShape(8.dp),
                             singleLine = true
                         )
-
                         if (!isUsernameValid) {
                             Text(
                                 text = "Username cannot be empty",
@@ -181,17 +170,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // Password field with improved label
                     Column {
                         Text(
                             text = "Password",
                             color = Color.White,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 4.dp),
+                            modifier = Modifier.padding(bottom = 4.dp),
                             fontSize = 14.sp
                         )
-
                         OutlinedTextField(
                             value = password,
                             onValueChange = {
@@ -234,7 +219,6 @@ class MainActivity : ComponentActivity() {
                             shape = RoundedCornerShape(8.dp),
                             singleLine = true
                         )
-
                         if (!isPasswordValid) {
                             Text(
                                 text = "Password must be at least 6 characters",
@@ -247,7 +231,6 @@ class MainActivity : ComponentActivity() {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Login button with improved styling
                     Button(
                         onClick = {
                             keyboardController?.hide()
@@ -267,24 +250,18 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2E8B57) // Sea Green
-                        ),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
                         shape = RoundedCornerShape(24.dp),
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 4.dp,
-                            pressedElevation = 2.dp
-                        )
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 2.dp)
                     ) {
                         Text(
                             text = "SIGN IN",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF98FB98) // Pale Green
+                            color = Color(0xFF98FB98)
                         )
                     }
 
-                    // Login message (error or success)
                     if (loginMessage.isNotEmpty()) {
                         Text(
                             text = loginMessage,
@@ -297,7 +274,6 @@ class MainActivity : ComponentActivity() {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Register link with improved styling
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -320,14 +296,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            // Footer text if needed
             Text(
                 text = "© 2025 Base Converter",
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
                 fontSize = 12.sp,
-                color = Color(0xFF2E8B57) // Sea Green
+                color = Color(0xFF2E8B57)
             )
         }
     }
