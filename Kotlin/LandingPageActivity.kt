@@ -29,7 +29,6 @@ import androidx.compose.ui.window.Dialog
 import com.example.baseconverter.ui.theme.BaseConverterTheme
 import java.util.*
 
-// Custom colors (unchanged)
 val MintGreen = Color(0xFF98FB98)
 val LightMint = Color(0xFF90EE90)
 val MediumSeaGreen = Color(0xFF3CB371)
@@ -48,7 +47,7 @@ class LandingPageActivity : ComponentActivity() {
                     val username = intent.getStringExtra("logged_in_user") ?: "User"
                     LandingPage(
                         username = username,
-                        onProfileClick = { navigateToProfileScreen() },
+                        onProfileClick = { navigateToProfileScreen(username) },
                         onSettingsClick = { navigateToSettingsScreen() },
                         onBaseConvertClick = { navigateToBaseConverter() }
                     )
@@ -57,8 +56,10 @@ class LandingPageActivity : ComponentActivity() {
         }
     }
 
-    private fun navigateToProfileScreen() {
-        val intent = Intent(this, ProfileActivity::class.java)
+    private fun navigateToProfileScreen(username: String) {
+        val intent = Intent(this, ProfileActivity::class.java).apply {
+            putExtra("USERNAME", username) // Match the key expected in ProfileActivity
+        }
         startActivity(intent)
     }
 
@@ -140,7 +141,6 @@ fun LandingPage(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Hero Section
             item {
                 Box(
                     modifier = Modifier
@@ -149,9 +149,7 @@ fun LandingPage(
                         .background(MintGreen.copy(alpha = 0.3f))
                         .padding(20.dp)
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "BaseConvert",
                             fontSize = 32.sp,
@@ -170,7 +168,6 @@ fun LandingPage(
                 }
             }
 
-            // Quick Actions
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -193,7 +190,6 @@ fun LandingPage(
                 }
             }
 
-            // Features Section
             item {
                 Box(
                     modifier = Modifier
@@ -218,7 +214,6 @@ fun LandingPage(
                 }
             }
 
-            // Stats/Testimonial
             item {
                 Box(
                     modifier = Modifier
@@ -228,9 +223,7 @@ fun LandingPage(
                         .shadow(2.dp, RoundedCornerShape(12.dp))
                         .padding(16.dp)
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Loved by Users",
                             fontSize = 20.sp,
@@ -250,7 +243,6 @@ fun LandingPage(
         }
     }
 
-    // Conversion Dialog
     if (showConversionDialog) {
         ConversionOptionsDialog(
             onDismiss = { showConversionDialog = false },
@@ -263,10 +255,7 @@ fun LandingPage(
 }
 
 @Composable
-fun ConversionOptionsDialog(
-    onDismiss: () -> Unit,
-    onBaseConvertClick: () -> Unit
-) {
+fun ConversionOptionsDialog(onDismiss: () -> Unit, onBaseConvertClick: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -290,27 +279,17 @@ fun ConversionOptionsDialog(
                 )
                 Button(
                     onClick = onBaseConvertClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MediumSeaGreen,
-                        contentColor = Color.White
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen, contentColor = Color.White),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "Base Converter",
-                        fontSize = 16.sp
-                    )
+                    Text(text = "Base Converter", fontSize = 16.sp)
                 }
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "Cancel",
-                        color = MediumSeaGreen,
-                        fontSize = 16.sp
-                    )
+                    Text(text = "Cancel", color = MediumSeaGreen, fontSize = 16.sp)
                 }
             }
         }
@@ -318,13 +297,7 @@ fun ConversionOptionsDialog(
 }
 
 @Composable
-fun ActionCard(
-    title: String,
-    subtitle: String,
-    color: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun ActionCard(title: String, subtitle: String, color: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .height(100.dp)
@@ -362,9 +335,7 @@ fun FeatureItem(title: String, description: String) {
                 .size(8.dp)
                 .background(MediumSeaGreen, CircleShape)
         )
-        Column(
-            modifier = Modifier.padding(start = 12.dp)
-        ) {
+        Column(modifier = Modifier.padding(start = 12.dp)) {
             Text(
                 text = title,
                 fontSize = 16.sp,
