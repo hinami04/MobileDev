@@ -11,9 +11,11 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
     companion object {
         private const val DATABASE_NAME = "BaseConverterDB"
-        private const val DATABASE_VERSION = 3 // Incremented to force schema update
+        private const val DATABASE_VERSION = 4 // Incremented for new tables
         private const val TABLE_USERS = "users"
         private const val TABLE_REQUESTS = "requests"
+        private const val TABLE_CONVERSIONS = "conversions"
+        private const val TABLE_SESSIONS = "sessions"
         // Users table columns
         private const val COLUMN_ID = "id"
         private const val COLUMN_USERNAME = "username"
@@ -25,11 +27,27 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         private const val COLUMN_STUDENT_USERNAME = "student_username"
         private const val COLUMN_TUTOR_USERNAME = "tutor_username"
         private const val COLUMN_STATUS = "status"
+        // Conversions table columns
+        private const val COLUMN_CONVERSION_ID = "id"
+        private const val COLUMN_USER_USERNAME = "user_username"
+        private const val COLUMN_INPUT_VALUE = "input_value"
+        private const val COLUMN_INPUT_BASE = "input_base"
+        private const val COLUMN_OUTPUT_VALUE = "output_value"
+        private const val COLUMN_OUTPUT_BASE = "output_base"
+        private const val COLUMN_TIMESTAMP = "timestamp"
+        // Sessions table columns
+        private const val COLUMN_SESSION_ID = "id"
+        private const val COLUMN_SESSION_STUDENT_USERNAME = "student_username"
+        private const val COLUMN_SESSION_TUTOR_USERNAME = "tutor_username"
+        private const val COLUMN_TOPIC = "topic"
+        private const val COLUMN_SESSION_DATE = "session_date"
+        private const val COLUMN_SESSION_STATUS = "session_status"
         private const val TAG = "DatabaseManager"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         Log.d(TAG, "Creating database schema")
+        // Users table
         val createUsersTable = """
             CREATE TABLE $TABLE_USERS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,6 +59,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         """.trimIndent()
         db.execSQL(createUsersTable)
 
+        // Requests table
         val createRequestsTable = """
             CREATE TABLE $TABLE_REQUESTS (
                 $COLUMN_REQUEST_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,20 +72,57 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         """.trimIndent()
         db.execSQL(createRequestsTable)
 
+        // Conversions table
+        val createConversionsTable = """
+            CREATE TABLE $TABLE_CONVERSIONS (
+                $COLUMN_CONVERSION_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COLUMN_USER_USERNAME TEXT NOT NULL,
+                $COLUMN_INPUT_VALUE TEXT NOT NULL,
+                $COLUMN_INPUT_BASE INTEGER NOT NULL,
+                $COLUMN_OUTPUT_VALUE TEXT NOT NULL,
+                $COLUMN_OUTPUT_BASE INTEGER NOT NULL,
+                $COLUMN_TIMESTAMP INTEGER NOT NULL,
+                FOREIGN KEY ($COLUMN_USER_USERNAME) REFERENCES $TABLE_USERS($COLUMN_USERNAME)
+            )
+        """.trimIndent()
+        db.execSQL(createConversionsTable)
+
+        // Sessions table
+        val createSessionsTable = """
+            CREATE TABLE $TABLE_SESSIONS (
+                $COLUMN_SESSION_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COLUMN_SESSION_STUDENT_USERNAME TEXT NOT NULL,
+                $COLUMN_SESSION_TUTOR_USERNAME TEXT NOT NULL,
+                $COLUMN_TOPIC TEXT NOT NULL,
+                $COLUMN_SESSION_DATE INTEGER NOT NULL,
+                $COLUMN_SESSION_STATUS TEXT NOT NULL DEFAULT 'Scheduled',
+                FOREIGN KEY ($COLUMN_SESSION_STUDENT_USERNAME) REFERENCES $TABLE_USERS($COLUMN_USERNAME),
+                FOREIGN KEY ($COLUMN_SESSION_TUTOR_USERNAME) REFERENCES $TABLE_USERS($COLUMN_USERNAME)
+            )
+        """.trimIndent()
+        db.execSQL(createSessionsTable)
+
+        // Indexes
         db.execSQL("CREATE INDEX idx_username ON $TABLE_USERS($COLUMN_USERNAME)")
         db.execSQL("CREATE INDEX idx_email ON $TABLE_USERS($COLUMN_EMAIL)")
         db.execSQL("CREATE INDEX idx_tutor_username ON $TABLE_REQUESTS($COLUMN_TUTOR_USERNAME)")
+        db.execSQL("CREATE INDEX idx_user_username ON $TABLE_CONVERSIONS($COLUMN_USER_USERNAME)")
+        db.execSQL("CREATE INDEX idx_session_tutor ON $TABLE_SESSIONS($COLUMN_SESSION_TUTOR_USERNAME)")
         Log.d(TAG, "Database schema created successfully")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         Log.d(TAG, "Upgrading database from version $oldVersion to $newVersion")
-        // Drop and recreate tables for any upgrade to ensure schema consistency
+        // Drop all tables and indexes, then recreate
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_REQUESTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_CONVERSIONS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_SESSIONS")
         db.execSQL("DROP INDEX IF EXISTS idx_username")
         db.execSQL("DROP INDEX IF EXISTS idx_email")
         db.execSQL("DROP INDEX IF EXISTS idx_tutor_username")
+        db.execSQL("DROP INDEX IF EXISTS idx_user_username")
+        db.execSQL("DROP INDEX IF EXISTS idx_session_tutor")
         onCreate(db)
         Log.d(TAG, "Database schema upgraded successfully")
     }
@@ -241,6 +297,30 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
+    fun getTutorRequestsForStudent(studentUsername: String): List<Pair<String, String>> {
+        val db = readableDatabase
+        var cursor: android.database.Cursor? = null
+        val requests = mutableListOf<Pair<String, String>>()
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_TUTOR_USERNAME, $COLUMN_STATUS FROM $TABLE_REQUESTS WHERE $COLUMN_STUDENT_USERNAME = ?",
+                arrayOf(studentUsername)
+            )
+            while (cursor.moveToNext()) {
+                val tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME))
+                val status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS))
+                requests.add(Pair(tutorUsername, status))
+            }
+            return requests
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get tutor requests for $studentUsername: ${e.message}", e)
+            return emptyList()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+    }
+
     fun updateRequestStatus(studentUsername: String, tutorUsername: String, newStatus: String): Boolean {
         val db = writableDatabase
         try {
@@ -256,6 +336,186 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             return rowsAffected > 0
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update request status: ${e.message}", e)
+            return false
+        } finally {
+            db.close()
+        }
+    }
+
+    // New method to get available tutors
+    fun getAvailableTutors(): List<String> {
+        val db = readableDatabase
+        var cursor: android.database.Cursor? = null
+        val tutors = mutableListOf<String>()
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_USERNAME FROM $TABLE_USERS WHERE $COLUMN_ROLE = ?",
+                arrayOf("Tutor")
+            )
+            while (cursor.moveToNext()) {
+                val tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME))
+                tutors.add(tutorUsername)
+            }
+            return tutors
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get available tutors: ${e.message}", e)
+            return emptyList()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+    }
+
+    // New method to save a conversion
+    fun saveConversion(
+        username: String,
+        inputValue: String,
+        inputBase: Int,
+        outputValue: String,
+        outputBase: Int
+    ): Boolean {
+        val db = writableDatabase
+        try {
+            val values = ContentValues().apply {
+                put(COLUMN_USER_USERNAME, username)
+                put(COLUMN_INPUT_VALUE, inputValue)
+                put(COLUMN_INPUT_BASE, inputBase)
+                put(COLUMN_OUTPUT_VALUE, outputValue)
+                put(COLUMN_OUTPUT_BASE, outputBase)
+                put(COLUMN_TIMESTAMP, System.currentTimeMillis())
+            }
+            val result = db.insertOrThrow(TABLE_CONVERSIONS, null, values)
+            return result != -1L
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save conversion for $username: ${e.message}", e)
+            return false
+        } finally {
+            db.close()
+        }
+    }
+
+    // New method to get conversion history
+    data class ConversionEntry(
+        val inputValue: String,
+        val inputBase: Int,
+        val outputValue: String,
+        val outputBase: Int,
+        val timestamp: Long
+    )
+
+    fun getConversionHistory(username: String): List<ConversionEntry> {
+        val db = readableDatabase
+        var cursor: android.database.Cursor? = null
+        val conversions = mutableListOf<ConversionEntry>()
+        try {
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_INPUT_VALUE, $COLUMN_INPUT_BASE, $COLUMN_OUTPUT_VALUE, $COLUMN_OUTPUT_BASE, $COLUMN_TIMESTAMP " +
+                        "FROM $TABLE_CONVERSIONS WHERE $COLUMN_USER_USERNAME = ? ORDER BY $COLUMN_TIMESTAMP DESC",
+                arrayOf(username)
+            )
+            while (cursor.moveToNext()) {
+                val inputValue = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INPUT_VALUE))
+                val inputBase = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INPUT_BASE))
+                val outputValue = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_OUTPUT_VALUE))
+                val outputBase = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_OUTPUT_BASE))
+                val timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP))
+                conversions.add(ConversionEntry(inputValue, inputBase, outputValue, outputBase, timestamp))
+            }
+            return conversions
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get conversion history for $username: ${e.message}", e)
+            return emptyList()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+    }
+
+    // New method to create a session
+    fun createSession(
+        studentUsername: String,
+        tutorUsername: String,
+        topic: String,
+        sessionDate: Long
+    ): Boolean {
+        val db = writableDatabase
+        try {
+            val values = ContentValues().apply {
+                put(COLUMN_SESSION_STUDENT_USERNAME, studentUsername)
+                put(COLUMN_SESSION_TUTOR_USERNAME, tutorUsername)
+                put(COLUMN_TOPIC, topic)
+                put(COLUMN_SESSION_DATE, sessionDate)
+                put(COLUMN_SESSION_STATUS, "Scheduled")
+            }
+            val result = db.insertOrThrow(TABLE_SESSIONS, null, values)
+            return result != -1L
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create session for $studentUsername with $tutorUsername: ${e.message}", e)
+            return false
+        } finally {
+            db.close()
+        }
+    }
+
+    // New method to get sessions for a user (student or tutor)
+    data class SessionEntry(
+        val studentUsername: String,
+        val tutorUsername: String,
+        val topic: String,
+        val sessionDate: Long,
+        val status: String
+    )
+
+    fun getSessionsForUser(username: String, isTutor: Boolean): List<SessionEntry> {
+        val db = readableDatabase
+        var cursor: android.database.Cursor? = null
+        val sessions = mutableListOf<SessionEntry>()
+        try {
+            val column = if (isTutor) COLUMN_SESSION_TUTOR_USERNAME else COLUMN_SESSION_STUDENT_USERNAME
+            cursor = db.rawQuery(
+                "SELECT $COLUMN_SESSION_STUDENT_USERNAME, $COLUMN_SESSION_TUTOR_USERNAME, $COLUMN_TOPIC, $COLUMN_SESSION_DATE, $COLUMN_SESSION_STATUS " +
+                        "FROM $TABLE_SESSIONS WHERE $column = ? ORDER BY $COLUMN_SESSION_DATE DESC",
+                arrayOf(username)
+            )
+            while (cursor.moveToNext()) {
+                val studentUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SESSION_STUDENT_USERNAME))
+                val tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SESSION_TUTOR_USERNAME))
+                val topic = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TOPIC))
+                val sessionDate = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_SESSION_DATE))
+                val status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SESSION_STATUS))
+                sessions.add(SessionEntry(studentUsername, tutorUsername, topic, sessionDate, status))
+            }
+            return sessions
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get sessions for $username: ${e.message}", e)
+            return emptyList()
+        } finally {
+            cursor?.close()
+            db.close()
+        }
+    }
+
+    // New method to update session status
+    fun updateSessionStatus(
+        studentUsername: String,
+        tutorUsername: String,
+        sessionDate: Long,
+        newStatus: String
+    ): Boolean {
+        val db = writableDatabase
+        try {
+            val values = ContentValues().apply {
+                put(COLUMN_SESSION_STATUS, newStatus)
+            }
+            val rowsAffected = db.update(
+                TABLE_SESSIONS,
+                values,
+                "$COLUMN_SESSION_STUDENT_USERNAME = ? AND $COLUMN_SESSION_TUTOR_USERNAME = ? AND $COLUMN_SESSION_DATE = ?",
+                arrayOf(studentUsername, tutorUsername, sessionDate.toString())
+            )
+            return rowsAffected > 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update session status: ${e.message}", e)
             return false
         } finally {
             db.close()
