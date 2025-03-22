@@ -2,6 +2,7 @@ package com.example.baseconverter
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -47,7 +48,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     LoginScreen(
                         onRegisterClick = { navigateToRegisterScreen() },
-                        onLoginSuccess = { username -> navigateToLandingPage(username) }
+                        onLoginSuccess = { username, role ->
+                            navigateToDashboard(username, role)
+                        }
                     )
                 }
             }
@@ -59,9 +62,14 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    private fun navigateToLandingPage(username: String) {
-        val intent = Intent(this, LandingPageActivity::class.java).apply {
+    private fun navigateToDashboard(username: String, role: String) {
+        val intent = when (role) {
+            "Tutor" -> Intent(this, TutorDashboardActivity::class.java)
+            "Student" -> Intent(this, StudentDashboardActivity::class.java)
+            else -> Intent(this, MainActivity::class.java) // Fallback
+        }.apply {
             putExtra("logged_in_user", username)
+            putExtra("user_role", role)
         }
         startActivity(intent)
         finish()
@@ -69,12 +77,14 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: (String) -> Unit) {
+    fun LoginScreen(onRegisterClick: () -> Unit, onLoginSuccess: (String, String) -> Unit) {
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+        var selectedRole by remember { mutableStateOf("Student") }
         var loginMessage by remember { mutableStateOf("") }
         var isUsernameValid by remember { mutableStateOf(true) }
         var isPasswordValid by remember { mutableStateOf(true) }
+        var isRoleValid by remember { mutableStateOf(true) }
 
         val focusManager = LocalFocusManager.current
         val keyboardController = LocalSoftwareKeyboardController.current
@@ -126,6 +136,7 @@ class MainActivity : ComponentActivity() {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Username Field
                     Column {
                         Text(
                             text = "Username",
@@ -170,6 +181,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    // Password Field
                     Column {
                         Text(
                             text = "Password",
@@ -197,24 +209,10 @@ class MainActivity : ComponentActivity() {
                             isError = !isPasswordValid,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Next
                             ),
                             keyboardActions = KeyboardActions(
-                                onDone = {
-                                    keyboardController?.hide()
-                                    if (isUsernameValid && isPasswordValid) {
-                                        scope.launch {
-                                            val success = databaseManager.loginUser(username, password)
-                                            if (success) {
-                                                onLoginSuccess(username)
-                                            } else {
-                                                loginMessage = "Invalid login credentials"
-                                            }
-                                        }
-                                    } else {
-                                        loginMessage = "Please fill in all fields correctly"
-                                    }
-                                }
+                                onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
                             singleLine = true
@@ -229,18 +227,47 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    // Role Selection Dropdown
+                    Column {
+                        Text(
+                            text = "Login as",
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                            fontSize = 14.sp
+                        )
+                        RoleDropdown(
+                            selectedRole = selectedRole,
+                            onRoleSelected = { role ->
+                                selectedRole = role
+                                isRoleValid = role.isNotEmpty()
+                            }
+                        )
+                        if (!isRoleValid) {
+                            Text(
+                                text = "Please select a role",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Sign In Button
                     Button(
                         onClick = {
                             keyboardController?.hide()
-                            if (isUsernameValid && isPasswordValid) {
+                            if (isUsernameValid && isPasswordValid && isRoleValid) {
                                 scope.launch {
-                                    val success = databaseManager.loginUser(username, password)
+                                    Log.d("Login", "Attempting login: $username, Role: $selectedRole")
+                                    val (success, dbRole) = databaseManager.loginUserWithRole(username, password, selectedRole)
                                     if (success) {
-                                        onLoginSuccess(username)
+                                        Log.d("Login", "Login successful for $username as $dbRole")
+                                        onLoginSuccess(username, selectedRole)
                                     } else {
-                                        loginMessage = "Invalid login credentials"
+                                        Log.e("Login", "Login failed for $username")
+                                        loginMessage = "Invalid login credentials or role mismatch"
                                     }
                                 }
                             } else {
@@ -306,12 +333,52 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
+    @Composable
+    fun RoleDropdown(selectedRole: String, onRoleSelected: (String) -> Unit) {
+        var expanded by remember { mutableStateOf(false) }
+        val roles = listOf("Student", "Tutor")
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFF90EE90))
+        ) {
+            Text(
+                text = selectedRole,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true }
+                    .padding(16.dp),
+                color = Color.Black
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF90EE90))
+            ) {
+                roles.forEach { role ->
+                    DropdownMenuItem(
+                        text = { Text(text = role, color = Color.Black) }, // Updated for Material3
+                        onClick = {
+                            onRoleSelected(role)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     BaseConverterTheme {
-        MainActivity().LoginScreen({}, { _ -> })
+        MainActivity().LoginScreen({}, { _, _ -> })
     }
 }
