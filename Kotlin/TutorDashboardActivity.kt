@@ -34,7 +34,7 @@ class TutorDashboardActivity : ComponentActivity() {
                     val username = intent.getStringExtra("logged_in_user") ?: "Tutor"
                     TutorDashboard(
                         username = username,
-                        onProfileClick = { navigateToProfile(username) },
+                        onProfileClick = { navigateToProfileScreen(username) },
                         onBaseConvertClick = { navigateToBaseConverter() },
                         onLogoutClick = { navigateToLogin() }
                     )
@@ -49,8 +49,8 @@ class TutorDashboardActivity : ComponentActivity() {
     val DarkSeaGreen = Color(0xFF2E8B57)
     val LightSalmon = Color(0xFFFFA07A)
 
-    private fun navigateToProfile(username: String) {
-        val intent = Intent(this, ProfileActivity::class.java).apply {
+    private fun navigateToProfileScreen(username: String) {
+        val intent = Intent(this, TutorProfileActivity::class.java).apply {
             putExtra("USERNAME", username)
         }
         startActivity(intent)
