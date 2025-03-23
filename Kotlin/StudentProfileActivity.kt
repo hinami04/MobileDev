@@ -14,13 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.baseconverter.ui.theme.BaseConverterTheme
-
 
 
 class StudentProfileActivity : ComponentActivity() {
@@ -34,37 +34,25 @@ class StudentProfileActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = LightMint.copy(alpha = 0.1f)
+                    color = LightPink
                 ) {
                     val username = intent.getStringExtra("USERNAME") ?: "Unknown Student"
                     StudentProfileScreen(
                         username = username,
                         databaseManager = databaseManager,
                         onBackClick = { navigateToDashboard() },
-                        onLogoutClick = { navigateToLoginScreen() },
-                        onSettingsClick = { navigateToSettingsScreen() } // Added callback for settings
+                        onMenuClick = { /* Placeholder for menu action */ },
+                        onSettingsClick = { navigateToSettingsScreen() }
                     )
                 }
             }
         }
     }
 
-    val MintGreen = Color(0xFF98FB98)
-    val LightMint = Color(0xFF90EE90)
-    val MediumSeaGreen = Color(0xFF3CB371)
-    val DarkSeaGreen = Color(0xFF2E8B57)
-    val LightSalmon = Color(0xFFFFA07A)
-
     private fun navigateToDashboard() {
         val intent = Intent(this, StudentDashboardActivity::class.java).apply {
             putExtra("logged_in_user", intent.getStringExtra("USERNAME"))
         }
-        startActivity(intent)
-        finish()
-    }
-
-    private fun navigateToLoginScreen() {
-        val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
@@ -81,46 +69,42 @@ fun StudentProfileScreen(
     username: String,
     databaseManager: DatabaseManager,
     onBackClick: () -> Unit,
-    onLogoutClick: () -> Unit,
-    onSettingsClick: () -> Unit // Added parameter for settings navigation
+    onMenuClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     var email by remember { mutableStateOf("Loading...") }
     var role by remember { mutableStateOf("Student") }
-    var tutorRequests by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
-    var conversionHistory by remember { mutableStateOf<List<DatabaseManager.ConversionEntry>>(emptyList()) }
-    var sessions by remember { mutableStateOf<List<DatabaseManager.SessionEntry>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         databaseManager.getUserDetails(username)?.let { (fetchedUsername, fetchedEmail, fetchedRole) ->
             email = fetchedEmail
             role = fetchedRole
         }
-        tutorRequests = databaseManager.getTutorRequestsForStudent(username)
-        conversionHistory = databaseManager.getConversionHistory(username)
-        sessions = databaseManager.getSessionsForUser(username, isTutor = false)
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightMint.copy(alpha = 0.1f))
+            .background(LightPink)
             .padding(16.dp)
     ) {
-        // Top Bar (Updated to include Settings button)
+        // Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MediumSeaGreen)
+                .background(Maroon)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Student Profile",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            IconButton(onClick = onBackClick) {
+                Text(
+                    text = "Back",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -133,11 +117,11 @@ fun StudentProfileScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                IconButton(onClick = onLogoutClick) {
+                IconButton(onClick = onMenuClick) {
                     Text(
-                        text = "Logout",
+                        text = "Menu",
                         fontSize = 16.sp,
-                        color = LightSalmon,
+                        color = Pink,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -146,211 +130,149 @@ fun StudentProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Profile Card (unchanged)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(6.dp, RoundedCornerShape(12.dp)),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = MintGreen.copy(alpha = 0.4f))
+        // Profile Section
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .size(120.dp)
+                    .background(Pink, shape = CircleShape),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .background(DarkSeaGreen, shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = username.first().toString().uppercase(),
-                        fontSize = 40.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Text(
-                    text = username,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkSeaGreen,
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = email,
-                    fontSize = 18.sp,
-                    color = MediumSeaGreen,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-
-                Text(
-                    text = "Role: $role",
-                    fontSize = 18.sp,
-                    color = MediumSeaGreen,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp)
+                    text = username.first().toString().uppercase(),
+                    fontSize = 48.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = username,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = DarkGray,
+                textAlign = TextAlign.Center
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // Tutor Requests (unchanged)
+        // Information Section
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(4.dp, RoundedCornerShape(12.dp)),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = LightYellow)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Tutor Requests",
+                    text = "Information",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DarkSeaGreen,
+                    color = Pink,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                if (tutorRequests.isEmpty()) {
-                    Text(
-                        text = "No tutor requests made yet",
-                        color = MediumSeaGreen,
-                        fontSize = 16.sp
-                    )
-                } else {
-                    tutorRequests.forEach { (tutor, status) ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Tutor: $tutor",
-                                fontSize = 16.sp,
-                                color = DarkSeaGreen
-                            )
-                            Text(
-                                text = "Status: $status",
-                                fontSize = 16.sp,
-                                color = MediumSeaGreen
-                            )
-                        }
+
+                // Credentials
+                Text(
+                    text = "Credentials",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = DarkGray,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp), // Increased height for better readability
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Student: $username",
+                            fontSize = 16.sp,
+                            color = DarkGray,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "BaseConverter University",
+                            fontSize = 14.sp,
+                            color = Pink,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
                     }
                 }
-            }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Conversion History (unchanged)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(4.dp, RoundedCornerShape(12.dp)),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+                // Subjects
                 Text(
-                    text = "Conversion History",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkSeaGreen,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    text = "Subjects",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = DarkGray,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
                 )
-                if (conversionHistory.isEmpty()) {
-                    Text(
-                        text = "No conversions yet",
-                        color = MediumSeaGreen,
-                        fontSize = 16.sp
-                    )
-                } else {
-                    conversionHistory.take(5).forEach { conversion ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
                         Text(
-                            text = "${conversion.inputValue} (Base ${conversion.inputBase}) -> ${conversion.outputValue} (Base ${conversion.outputBase})",
+                            text = "Mathematics, Computer Science",
                             fontSize = 16.sp,
-                            color = MediumSeaGreen,
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            color = DarkGray
+                        )
+                    }
+                }
+
+                // Contact Info
+                Text(
+                    text = "Contact Info",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = DarkGray,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = email,
+                            fontSize = 16.sp,
+                            color = DarkGray
                         )
                     }
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Sessions (unchanged)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(4.dp, RoundedCornerShape(12.dp)),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Tutoring Sessions",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkSeaGreen,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                if (sessions.isEmpty()) {
-                    Text(
-                        text = "No sessions scheduled",
-                        color = MediumSeaGreen,
-                        fontSize = 16.sp
-                    )
-                } else {
-                    sessions.forEach { session ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Tutor: ${session.tutorUsername}, Topic: ${session.topic}",
-                                fontSize = 16.sp,
-                                color = DarkSeaGreen
-                            )
-                            Text(
-                                text = "Status: ${session.status}",
-                                fontSize = 16.sp,
-                                color = MediumSeaGreen
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Back to Dashboard Button (unchanged)
-        Button(
-            onClick = onBackClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = "Back to Dashboard",
-                color = Color.White,
-                fontSize = 18.sp
-            )
         }
     }
 }
@@ -363,8 +285,8 @@ fun StudentProfileScreenPreview() {
             username = "TestStudent",
             databaseManager = DatabaseManager(androidx.compose.ui.platform.LocalContext.current),
             onBackClick = {},
-            onLogoutClick = {},
-            onSettingsClick = {} // Added for preview
+            onMenuClick = {},
+            onSettingsClick = {}
         )
     }
 }
