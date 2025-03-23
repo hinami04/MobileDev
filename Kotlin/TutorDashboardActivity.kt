@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,8 +21,6 @@ import androidx.compose.ui.unit.sp
 import com.example.baseconverter.ui.theme.BaseConverterTheme
 import java.util.Calendar
 
-// Define colors from your existing app
-
 class TutorDashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,25 +28,18 @@ class TutorDashboardActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = LightMint
+                    color = LightPink // Updated to LightPink
                 ) {
                     val username = intent.getStringExtra("logged_in_user") ?: "Tutor"
                     TutorDashboard(
                         username = username,
                         onProfileClick = { navigateToProfileScreen(username) },
-                        onBaseConvertClick = { navigateToBaseConverter() },
-                        onLogoutClick = { navigateToLogin() }
+                        onBaseConvertClick = { navigateToBaseConverter() }
                     )
                 }
             }
         }
     }
-
-    val MintGreen = Color(0xFF98FB98)
-    val LightMint = Color(0xFF90EE90)
-    val MediumSeaGreen = Color(0xFF3CB371)
-    val DarkSeaGreen = Color(0xFF2E8B57)
-    val LightSalmon = Color(0xFFFFA07A)
 
     private fun navigateToProfileScreen(username: String) {
         val intent = Intent(this, TutorProfileActivity::class.java).apply {
@@ -60,20 +52,14 @@ class TutorDashboardActivity : ComponentActivity() {
         val intent = Intent(this, BaseConverterActivity::class.java)
         startActivity(intent)
     }
-
-    private fun navigateToLogin() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TutorDashboard(
     username: String,
     onProfileClick: () -> Unit,
-    onBaseConvertClick: () -> Unit,
-    onLogoutClick: () -> Unit
+    onBaseConvertClick: () -> Unit
 ) {
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val greeting = when (currentHour) {
@@ -85,38 +71,52 @@ fun TutorDashboard(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightMint)
+            .background(LightPink) // Updated to LightPink
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Header
-        Card(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = MediumSeaGreen)
+                .background(Maroon) // Updated to Maroon
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "$greeting, $username",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = "$greeting, $username",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Button(
-                    onClick = onLogoutClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = LightSalmon),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Logout", color = Color.White, fontSize = 14.sp)
+                IconButton(onClick = { /* Search action */ }) {
+                    Text(
+                        text = "Search",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                IconButton(onClick = { /* Notifications action */ }) {
+                    Text(
+                        text = "Notifications",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                IconButton(onClick = onProfileClick) {
+                    Text(
+                        text = "Profile",
+                        fontSize = 16.sp,
+                        color = Pink, // Updated to Pink
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -126,13 +126,13 @@ fun TutorDashboard(
             text = "Tutor Dashboard",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = DarkSeaGreen,
+            color = Pink, // Updated to Pink
             textAlign = TextAlign.Center
         )
         Text(
             text = "Support Your Students",
             fontSize = 18.sp,
-            color = MediumSeaGreen,
+            color = DarkGray, // Updated to DarkGray
             textAlign = TextAlign.Center
         )
 
@@ -148,7 +148,7 @@ fun TutorDashboard(
                 modifier = Modifier
                     .weight(1f)
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Profile", color = Color.White, fontSize = 16.sp)
@@ -158,7 +158,7 @@ fun TutorDashboard(
                 modifier = Modifier
                     .weight(1f)
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Base Converter", color = Color.White, fontSize = 16.sp)
@@ -171,7 +171,7 @@ fun TutorDashboard(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = MintGreen)
+            colors = CardDefaults.cardColors(containerColor = LightYellow) // Updated to LightYellow
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -181,7 +181,7 @@ fun TutorDashboard(
                     text = "Student Requests",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DarkSeaGreen
+                    color = Pink // Updated to Pink
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 // Placeholder student list
@@ -190,7 +190,7 @@ fun TutorDashboard(
                     Text(
                         text = "No requests yet",
                         fontSize = 16.sp,
-                        color = MediumSeaGreen
+                        color = DarkGray // Updated to DarkGray
                     )
                 } else {
                     students.forEach { student ->
@@ -203,11 +203,11 @@ fun TutorDashboard(
                             Text(
                                 text = student,
                                 fontSize = 16.sp,
-                                color = DarkSeaGreen
+                                color = DarkGray // Updated to DarkGray
                             )
                             Button(
                                 onClick = { /* Manage student action */ },
-                                colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
+                                colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier.height(36.dp)
                             ) {
@@ -226,7 +226,7 @@ fun TutorDashboard(
         Text(
             text = "© 2025 Base Converter",
             fontSize = 12.sp,
-            color = DarkSeaGreen,
+            color = DarkGray, // Updated to DarkGray
             modifier = Modifier.padding(bottom = 8.dp)
         )
     }
@@ -239,8 +239,7 @@ fun TutorDashboardPreview() {
         TutorDashboard(
             username = "TutorName",
             onProfileClick = {},
-            onBaseConvertClick = {},
-            onLogoutClick = {}
+            onBaseConvertClick = {}
         )
     }
 }
