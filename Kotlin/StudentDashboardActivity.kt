@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,13 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.baseconverter.ui.theme.BaseConverterTheme
-import java.util.Calendar
 
-val MintGreen = Color(0xFF98FB98)
-val LightMint = Color(0xFF90EE90)
-val MediumSeaGreen = Color(0xFF3CB371)
-val DarkSeaGreen = Color(0xFF2E8B57)
-val LightSalmon = Color(0xFFFFA07A)
+// New color scheme
+val Maroon = Color(0xFF850E35)
+val LightPink = Color(0xFFFFC4C4)
+val Pink = Color(0xFFEE6983)
+val LightYellow = Color(0xFFFFF5E4)
 
 class StudentDashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,7 @@ class StudentDashboardActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = LightMint.copy(alpha = 0.1f)
+                    color = LightPink // Updated background color
                 ) {
                     val username = intent.getStringExtra("logged_in_user") ?: "Student"
                     StudentDashboard(
@@ -51,8 +52,7 @@ class StudentDashboardActivity : ComponentActivity() {
                         onRequestTutorClick = { tutorUsername ->
                             val success = databaseManager.requestTutor(username, tutorUsername)
                             // Optionally show a toast or update UI based on success
-                        },
-                        onLogoutClick = { navigateToLoginScreen() }
+                        }
                     )
                 }
             }
@@ -70,68 +70,65 @@ class StudentDashboardActivity : ComponentActivity() {
         val intent = Intent(this, BaseConverterActivity::class.java)
         startActivity(intent)
     }
-
-    private fun navigateToLoginScreen() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
 }
 
-// Rest of the StudentDashboardActivity code remains the same
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentDashboard(
     username: String,
     onProfileClick: () -> Unit,
     onBaseConvertClick: () -> Unit,
-    onRequestTutorClick: (String) -> Unit, // Modified to pass tutor username
-    onLogoutClick: () -> Unit
+    onRequestTutorClick: (String) -> Unit
 ) {
     val context = LocalContext.current
     val databaseManager = remember { DatabaseManager(context) }
-    val prefs: SharedPreferences = context.getSharedPreferences("ConversionHistory", Context.MODE_PRIVATE)
-    val history by remember { mutableStateOf(prefs.getStringSet("history", emptySet())?.toList() ?: emptyList()) }
     var tutors by remember { mutableStateOf<List<String>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         tutors = databaseManager.getAvailableTutors()
     }
 
-    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    val greeting = when (currentHour) {
-        in 5..11 -> "Good Morning"
-        in 12..16 -> "Good Afternoon"
-        else -> "Good Evening"
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightMint.copy(alpha = 0.1f))
+            .background(LightPink) // Updated background color
     ) {
-        // Top Bar (unchanged)
+        // Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MediumSeaGreen)
+                .background(Maroon) // Updated to Maroon
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "$greeting, $username",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            IconButton(onClick = onLogoutClick) {
+            IconButton(onClick = onProfileClick) {
                 Text(
-                    text = "Logout",
+                    text = "Profile",
                     fontSize = 16.sp,
-                    color = LightSalmon,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IconButton(onClick = { /* Search action */ }) {
+                    Text(
+                        text = "Search",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                IconButton(onClick = { /* Notifications action */ }) {
+                    Text(
+                        text = "Notifications",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
@@ -142,273 +139,143 @@ fun StudentDashboard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Welcome Section (unchanged)
+            // Find Your Teacher Section
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(6.dp, RoundedCornerShape(12.dp)),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MintGreen.copy(alpha = 0.4f))
-                ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Student Dashboard",
-                            fontSize = 36.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = DarkSeaGreen,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            text = "Learn and Convert with Ease",
-                            fontSize = 18.sp,
-                            color = MediumSeaGreen,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
-                    }
-                }
+                Text(
+                    text = "Find your teacher!",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Pink, // Updated to Pink
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
-            // Quick Actions (unchanged)
+            // Category Buttons
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ActionCard(
-                        title = "Profile",
-                        subtitle = "Your stats",
-                        color = DarkSeaGreen.copy(alpha = 0.25f),
-                        onClick = onProfileClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ActionCard(
-                        title = "Convert",
-                        subtitle = "Start converting",
-                        color = DarkSeaGreen.copy(alpha = 0.25f),
-                        onClick = onBaseConvertClick,
-                        modifier = Modifier.weight(1f)
-                    )
+                    CategoryButton(text = "+ x /", onClick = { /* Math category action */ })
+                    CategoryButton(text = "ABC", onClick = { /* Alphabet category action */ })
+                    CategoryButton(text = "0101", onClick = onBaseConvertClick)
+                    CategoryButton(text = "More", onClick = { /* More categories action */ })
                 }
             }
 
-            // Quick Conversion (unchanged)
-            item {
-                QuickConverterCard(onBaseConvertClick = onBaseConvertClick)
-            }
-
-            // Available Tutors Section
+            // Top Teachers Section
             item {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .shadow(4.dp, RoundedCornerShape(12.dp)),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = LightYellow) // Updated to LightYellow
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Available Tutors",
+                            text = "Top Teachers",
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DarkSeaGreen,
+                            color = Pink, // Updated to Pink
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         if (tutors.isEmpty()) {
                             Text(
-                                text = "No tutors available",
-                                color = MediumSeaGreen,
+                                text = "No teachers available",
+                                color = DarkGray, // Updated to DarkGray
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
-                        } else {
-                            tutors.forEach { tutor ->
-                                TutorItem(
-                                    name = tutor,
-                                    onRequestClick = { onRequestTutorClick(tutor) }
-                                )
-                            }
                         }
                     }
                 }
             }
 
-            // Recent Activity Section (unchanged)
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(4.dp, RoundedCornerShape(12.dp)),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Recent Activity",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = DarkSeaGreen,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        if (history.isEmpty()) {
-                            Text(
-                                text = "No recent conversions or sessions",
-                                color = MediumSeaGreen,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                        } else {
-                            history.take(3).forEach { entry ->
-                                Text(
-                                    text = entry,
-                                    color = MediumSeaGreen,
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.padding(vertical = 6.dp)
-                                )
-                            }
-                        }
-                    }
-                }
+            // List of Teachers
+            items(tutors) { tutor ->
+                TeacherCard(
+                    name = tutor,
+                    onRequestClick = { onRequestTutorClick(tutor) },
+                    onProfileClick = onProfileClick
+                )
             }
         }
     }
 }
 
 @Composable
-fun TutorItem(name: String, onRequestClick: () -> Unit) {
-    Row(
+fun CategoryButton(text: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .size(60.dp),
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = Maroon) // Updated to Maroon
     ) {
         Text(
-            text = name,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            color = DarkSeaGreen
+            text = text,
+            color = Color.White,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
         )
-        Button(
-            onClick = onRequestClick,
-            colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.height(36.dp)
-        ) {
-            Text(
-                text = "Request",
-                color = Color.White,
-                fontSize = 14.sp
-            )
-        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickConverterCard(onBaseConvertClick: () -> Unit) {
-    var input by remember { mutableStateOf("") }
-    var result by remember { mutableStateOf("") }
-
+fun TeacherCard(name: String, onRequestClick: () -> Unit, onProfileClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(4.dp, RoundedCornerShape(12.dp)),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = "Quick Convert (Dec to Hex)",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = DarkSeaGreen,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OutlinedTextField(
-                value = input,
-                onValueChange = {
-                    input = it
-                    result = try {
-                        if (it.isBlank()) "" else it.toLong(10).toString(16).uppercase()
-                    } catch (e: Exception) {
-                        "Error"
-                    }
-                },
-                label = { Text("Enter Decimal", fontSize = 16.sp) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MediumSeaGreen,
-                    unfocusedBorderColor = DarkSeaGreen,
-                    cursorColor = MediumSeaGreen,
-                    focusedLabelColor = MediumSeaGreen,
-                    unfocusedLabelColor = DarkSeaGreen
-                )
-            )
-            Text(
-                text = "Hex Result: $result",
-                fontSize = 18.sp,
-                color = MediumSeaGreen,
-                modifier = Modifier.padding(top = 12.dp)
-            )
-            Button(
-                onClick = onBaseConvertClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Full Converter", color = Color.White, fontSize = 18.sp)
-            }
-        }
-    }
-}
-
-@Composable
-fun ActionCard(
-    title: String,
-    subtitle: String,
-    color: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .height(110.dp)
-            .clickable(onClick = onClick)
+            .height(80.dp)
             .shadow(2.dp, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = color)
+        colors = CardDefaults.cardColors(containerColor = LightYellow) // Updated to LightYellow
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = title,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = DarkSeaGreen
-            )
-            Text(
-                text = subtitle,
-                fontSize = 16.sp,
-                color = MediumSeaGreen,
-                modifier = Modifier.padding(top = 4.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable(onClick = onProfileClick)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Pink, shape = CircleShape), // Updated to Pink
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = name.first().toString().uppercase(),
+                        fontSize = 20.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = DarkGray // Updated to DarkGray
+                )
+            }
+            Button(
+                onClick = onRequestClick,
+                colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.height(36.dp)
+            ) {
+                Text(
+                    text = "Request",
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
@@ -421,8 +288,7 @@ fun StudentDashboardPreview() {
             username = "StudentName",
             onProfileClick = {},
             onBaseConvertClick = {},
-            onRequestTutorClick = {},
-            onLogoutClick = {}
+            onRequestTutorClick = {}
         )
     }
 }
