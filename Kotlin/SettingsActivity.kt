@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,7 +31,7 @@ class SettingsActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = LightMint.copy(alpha = 0.1f)
+                    color = LightPink // Updated to LightPink
                 ) {
                     SettingsScreen(
                         navigateToPreviousPage = { finish() },
@@ -47,8 +48,6 @@ class SettingsActivity : ComponentActivity() {
     }
 }
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -59,22 +58,16 @@ fun SettingsScreen(
     var isNotificationsEnabled by remember { mutableStateOf(true) }
     var fontSize by remember { mutableStateOf("Medium") }
 
-    val MintGreen = Color(0xFF98FB98)
-    val LightMint = Color(0xFF90EE90)
-    val MediumSeaGreen = Color(0xFF3CB371)
-    val DarkSeaGreen = Color(0xFF2E8B57)
-    val LightSalmon = Color(0xFFFFA07A)
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(LightMint.copy(alpha = 0.1f))
+            .background(LightPink) // Updated to LightPink
     ) {
         // Top Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MediumSeaGreen)
+                .background(Maroon) // Updated to Maroon
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -85,7 +78,7 @@ fun SettingsScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
-            // You can add a search icon here if needed, as in the new code
+            // You can add a search icon here if needed
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -103,14 +96,14 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .shadow(4.dp, RoundedCornerShape(12.dp)),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = LightYellow) // Updated to LightYellow
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = "Preferences",
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DarkSeaGreen,
+                            color = Pink, // Updated to Pink
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
 
@@ -125,16 +118,16 @@ fun SettingsScreen(
                             Text(
                                 text = "Dark Theme",
                                 fontSize = 16.sp,
-                                color = DarkSeaGreen
+                                color = DarkGray // Updated to DarkGray
                             )
                             Switch(
                                 checked = isDarkThemeEnabled,
                                 onCheckedChange = { isDarkThemeEnabled = it },
                                 colors = SwitchDefaults.colors(
-                                    checkedThumbColor = MediumSeaGreen,
-                                    checkedTrackColor = MediumSeaGreen.copy(alpha = 0.5f),
-                                    uncheckedThumbColor = LightSalmon,
-                                    uncheckedTrackColor = LightSalmon.copy(alpha = 0.5f)
+                                    checkedThumbColor = Maroon, // Updated to Maroon
+                                    checkedTrackColor = Maroon.copy(alpha = 0.5f),
+                                    uncheckedThumbColor = DarkGray, // Updated to DarkGray
+                                    uncheckedTrackColor = DarkGray.copy(alpha = 0.5f)
                                 )
                             )
                         }
@@ -150,21 +143,21 @@ fun SettingsScreen(
                             Text(
                                 text = "Enable Notifications",
                                 fontSize = 16.sp,
-                                color = DarkSeaGreen
+                                color = DarkGray // Updated to DarkGray
                             )
                             Switch(
                                 checked = isNotificationsEnabled,
                                 onCheckedChange = { isNotificationsEnabled = it },
                                 colors = SwitchDefaults.colors(
-                                    checkedThumbColor = MediumSeaGreen,
-                                    checkedTrackColor = MediumSeaGreen.copy(alpha = 0.5f),
-                                    uncheckedThumbColor = LightSalmon,
-                                    uncheckedTrackColor = LightSalmon.copy(alpha = 0.5f)
+                                    checkedThumbColor = Maroon, // Updated to Maroon
+                                    checkedTrackColor = Maroon.copy(alpha = 0.5f),
+                                    uncheckedThumbColor = DarkGray, // Updated to DarkGray
+                                    uncheckedTrackColor = DarkGray.copy(alpha = 0.5f)
                                 )
                             )
                         }
 
-                        // Font Size (from new code)
+                        // Font Size
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -175,12 +168,12 @@ fun SettingsScreen(
                             Text(
                                 text = "Font Size",
                                 fontSize = 16.sp,
-                                color = DarkSeaGreen
+                                color = DarkGray // Updated to DarkGray
                             )
                             Text(
                                 text = fontSize,
                                 fontSize = 16.sp,
-                                color = MediumSeaGreen
+                                color = Pink // Updated to Pink
                             )
                         }
                     }
@@ -194,20 +187,20 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .shadow(4.dp, RoundedCornerShape(12.dp)),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = LightYellow) // Updated to LightYellow
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = "About Developer",
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = DarkSeaGreen,
+                            color = Pink, // Updated to Pink
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
                             text = "Learn more about the developer behind this app.",
                             fontSize = 16.sp,
-                            color = DarkSeaGreen,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Button(
@@ -215,7 +208,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
@@ -236,7 +229,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
