@@ -51,12 +51,14 @@ fun SettingsScreen(
     var fontSize by remember { mutableStateOf("Medium") }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp) // Adds margin to the sides
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(vertical = 16.dp), // Adjusts vertical padding
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -82,7 +84,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(), // This will also follow the column padding
             verticalArrangement = Arrangement.Top
         ) {
             item {
@@ -185,6 +187,7 @@ fun SettingsScreen(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
