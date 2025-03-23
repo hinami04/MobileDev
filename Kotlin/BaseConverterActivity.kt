@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +31,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.example.baseconverter.ui.theme.BaseConverterTheme
 import java.lang.NumberFormatException
 import android.content.SharedPreferences
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 
 class BaseConverterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,17 +143,17 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 },
                 actions = {
                     TextButton(onClick = { showHistory = true }) {
-                        Text("History", color = Color.White)
+                        Text("History", color = Pink) // Updated to Pink
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MediumSeaGreen)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Maroon) // Updated to Maroon
             )
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LightMint.copy(alpha = 0.1f))
+                .background(LightPink) // Updated to LightPink
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -162,7 +163,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = LightYellow), // Updated to LightYellow
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
@@ -175,12 +176,14 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                             inputNumber = it
                             convertNumber()
                         },
-                        label = { Text("Enter ${selectedConversion.split(" ")[0]} Number") },
+                        label = { Text("Enter ${selectedConversion.split(" ")[0]} Number", color = DarkGray) }, // Updated label color
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MediumSeaGreen,
-                            unfocusedBorderColor = DarkSeaGreen,
-                            cursorColor = MediumSeaGreen
+                            focusedBorderColor = Pink, // Updated to Pink
+                            unfocusedBorderColor = DarkGray, // Updated to DarkGray
+                            cursorColor = Pink, // Updated to Pink
+                            focusedTextColor = DarkGray, // Updated text color
+                            unfocusedTextColor = DarkGray // Updated text color
                         ),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = when (selectedConversion.split(" ")[0]) {
@@ -205,7 +208,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                     ) {
                         Button(
                             onClick = { inputNumber = ""; result = ""; errorMessage = "" },
-                            colors = ButtonDefaults.buttonColors(containerColor = LightSalmon),
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Clear", color = Color.White)
@@ -217,7 +220,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                                 Toast.makeText(context, "Result copied!", Toast.LENGTH_SHORT).show()
                             },
                             enabled = result.isNotEmpty(),
-                            colors = ButtonDefaults.buttonColors(containerColor = MediumSeaGreen),
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Copy Result", color = Color.White)
@@ -230,7 +233,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MintGreen.copy(alpha = 0.3f)),
+                colors = CardDefaults.cardColors(containerColor = LightYellow), // Updated to LightYellow
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
@@ -241,19 +244,19 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                         text = "${selectedConversion.split(" to ")[1]} Result",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = DarkSeaGreen
+                        color = Pink // Updated to Pink
                     )
                     Text(
                         text = result.ifEmpty { "—" },
                         fontSize = 32.sp,
-                        color = MediumSeaGreen,
+                        color = DarkGray, // Updated to DarkGray
                         modifier = Modifier.padding(top = 8.dp),
                         maxLines = 1
                     )
                     if (errorMessage.isNotEmpty()) {
                         Text(
                             text = errorMessage,
-                            color = LightSalmon,
+                            color = Color.Red, // Kept red for error visibility
                             fontSize = 14.sp,
                             modifier = Modifier.padding(top = 8.dp),
                             textAlign = TextAlign.Center
@@ -267,16 +270,16 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
         if (showHistory) {
             AlertDialog(
                 onDismissRequest = { showHistory = false },
-                title = { Text("Conversion History", color = DarkSeaGreen) },
+                title = { Text("Conversion History", color = Pink) }, // Updated to Pink
                 text = {
                     if (history.isEmpty()) {
-                        Text("No conversions yet", color = MediumSeaGreen)
+                        Text("No conversions yet", color = DarkGray) // Updated to DarkGray
                     } else {
                         LazyColumn {
                             items(history) { entry ->
                                 Text(
                                     text = entry,
-                                    color = MediumSeaGreen,
+                                    color = DarkGray, // Updated to DarkGray
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )
                             }
@@ -285,10 +288,10 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 },
                 confirmButton = {
                     TextButton(onClick = { showHistory = false }) {
-                        Text("Close", color = MediumSeaGreen)
+                        Text("Close", color = Pink) // Updated to Pink
                     }
                 },
-                containerColor = Color.White
+                containerColor = LightYellow // Updated to LightYellow
             )
         }
     }
@@ -310,25 +313,28 @@ fun ConversionSelector(
         OutlinedTextField(
             value = selectedConversion,
             onValueChange = {},
-            label = { Text("Conversion Type") },
+            label = { Text("Conversion Type", color = DarkGray) }, // Updated label color
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MediumSeaGreen,
-                unfocusedBorderColor = DarkSeaGreen,
-                cursorColor = MediumSeaGreen
+                focusedBorderColor = Pink, // Updated to Pink
+                unfocusedBorderColor = DarkGray, // Updated to DarkGray
+                cursorColor = Pink, // Updated to Pink
+                focusedTextColor = DarkGray, // Updated text color
+                unfocusedTextColor = DarkGray // Updated text color
             )
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(LightYellow) // Updated to LightYellow
         ) {
             conversions.forEach { conversion ->
                 DropdownMenuItem(
-                    text = { Text(conversion) },
+                    text = { Text(conversion, color = DarkGray) }, // Updated to DarkGray
                     onClick = {
                         onConversionChange(conversion)
                         expanded = false
