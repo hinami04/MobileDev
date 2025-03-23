@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.example.baseconverter.ui.theme.BaseConverterTheme
 import kotlinx.coroutines.launch
 
+
 class RegisterActivity : ComponentActivity() {
     private lateinit var databaseManager: DatabaseManager
 
@@ -44,7 +46,7 @@ class RegisterActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFF98FB98)
+                    color = LightPink // Updated to LightPink
                 ) {
                     RegisterScreen()
                 }
@@ -75,7 +77,7 @@ class RegisterActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF90EE90)),
+                .background(LightPink), // Updated to LightPink
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -85,7 +87,7 @@ class RegisterActivity : ComponentActivity() {
                     .padding(top = 48.dp),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF2E8B57)
+                color = Pink // Updated to Pink
             )
 
             Card(
@@ -93,7 +95,7 @@ class RegisterActivity : ComponentActivity() {
                     .fillMaxWidth(0.9f)
                     .padding(16.dp)
                     .verticalScroll(scrollState),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF3CB371)),
+                colors = CardDefaults.cardColors(containerColor = LightYellow), // Updated to LightYellow
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -108,12 +110,12 @@ class RegisterActivity : ComponentActivity() {
                         text = "Create Account",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Pink // Updated to Pink
                     )
 
                     Text(
                         text = "Please fill in your details",
-                        color = Color(0xFFE0FFE0),
+                        color = DarkGray, // Updated to DarkGray
                         fontSize = 16.sp
                     )
 
@@ -123,7 +125,7 @@ class RegisterActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Username",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
@@ -138,13 +140,13 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            placeholder = { Text("Choose a username") },
+                            placeholder = { Text("Choose a username", color = DarkGray) }, // Updated placeholder color
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF90EE90),
-                                unfocusedContainerColor = Color(0xFF90EE90),
-                                errorContainerColor = Color(0xFFFFA07A),
-                                focusedBorderColor = Color(0xFF2E8B57),
-                                unfocusedBorderColor = Color(0xFF90EE90)
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorContainerColor = Color.White,
+                                focusedBorderColor = Pink, // Updated to Pink
+                                unfocusedBorderColor = DarkGray // Updated to DarkGray
                             ),
                             isError = !isUsernameValid,
                             keyboardOptions = KeyboardOptions(
@@ -155,7 +157,8 @@ class RegisterActivity : ComponentActivity() {
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
-                            singleLine = true
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = DarkGray) // Updated text color
                         )
                         if (!isUsernameValid) {
                             Text(
@@ -171,7 +174,7 @@ class RegisterActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Email",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
@@ -186,13 +189,13 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            placeholder = { Text("Enter your email address") },
+                            placeholder = { Text("Enter your email address", color = DarkGray) }, // Updated placeholder color
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF90EE90),
-                                unfocusedContainerColor = Color(0xFF90EE90),
-                                errorContainerColor = Color(0xFFFFA07A),
-                                focusedBorderColor = Color(0xFF2E8B57),
-                                unfocusedBorderColor = Color(0xFF90EE90)
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorContainerColor = Color.White,
+                                focusedBorderColor = Pink, // Updated to Pink
+                                unfocusedBorderColor = DarkGray // Updated to DarkGray
                             ),
                             isError = !isEmailValid,
                             keyboardOptions = KeyboardOptions(
@@ -203,7 +206,8 @@ class RegisterActivity : ComponentActivity() {
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
-                            singleLine = true
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = DarkGray) // Updated text color
                         )
                         if (!isEmailValid) {
                             Text(
@@ -219,7 +223,7 @@ class RegisterActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Password",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
@@ -235,14 +239,14 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            placeholder = { Text("Create a password (min 6 characters)") },
+                            placeholder = { Text("Create a password (min 6 characters)", color = DarkGray) }, // Updated placeholder color
                             visualTransformation = PasswordVisualTransformation(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF90EE90),
-                                unfocusedContainerColor = Color(0xFF90EE90),
-                                errorContainerColor = Color(0xFFFFA07A),
-                                focusedBorderColor = Color(0xFF2E8B57),
-                                unfocusedBorderColor = Color(0xFF90EE90)
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorContainerColor = Color.White,
+                                focusedBorderColor = Pink, // Updated to Pink
+                                unfocusedBorderColor = DarkGray // Updated to DarkGray
                             ),
                             isError = !isPasswordValid,
                             keyboardOptions = KeyboardOptions(
@@ -253,7 +257,8 @@ class RegisterActivity : ComponentActivity() {
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
-                            singleLine = true
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = DarkGray) // Updated text color
                         )
                         if (!isPasswordValid) {
                             Text(
@@ -269,7 +274,7 @@ class RegisterActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Confirm Password",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
@@ -284,14 +289,14 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            placeholder = { Text("Re-enter your password") },
+                            placeholder = { Text("Re-enter your password", color = DarkGray) }, // Updated placeholder color
                             visualTransformation = PasswordVisualTransformation(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF90EE90),
-                                unfocusedContainerColor = Color(0xFF90EE90),
-                                errorContainerColor = Color(0xFFFFA07A),
-                                focusedBorderColor = Color(0xFF2E8B57),
-                                unfocusedBorderColor = Color(0xFF90EE90)
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorContainerColor = Color.White,
+                                focusedBorderColor = Pink, // Updated to Pink
+                                unfocusedBorderColor = DarkGray // Updated to DarkGray
                             ),
                             isError = !isConfirmPasswordValid,
                             keyboardOptions = KeyboardOptions(
@@ -302,7 +307,8 @@ class RegisterActivity : ComponentActivity() {
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
-                            singleLine = true
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = DarkGray) // Updated text color
                         )
                         if (!isConfirmPasswordValid) {
                             Text(
@@ -318,7 +324,7 @@ class RegisterActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Register as",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
@@ -356,7 +362,7 @@ class RegisterActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                         shape = RoundedCornerShape(24.dp),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 2.dp)
                     ) {
@@ -364,7 +370,7 @@ class RegisterActivity : ComponentActivity() {
                             text = "CREATE ACCOUNT",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF98FB98)
+                            color = Color.White // Updated to white for contrast
                         )
                     }
 
@@ -376,7 +382,7 @@ class RegisterActivity : ComponentActivity() {
                                 .padding(top = 8.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (registerMessage.startsWith("Registration successful"))
-                                    Color(0xFF006400).copy(alpha = 0.2f) else Color.Red.copy(alpha = 0.2f)
+                                    Pink.copy(alpha = 0.2f) else Color.Red.copy(alpha = 0.2f) // Updated success background to Pink
                             ),
                             shape = RoundedCornerShape(8.dp)
                         ) {
@@ -384,7 +390,7 @@ class RegisterActivity : ComponentActivity() {
                                 text = registerMessage,
                                 textAlign = TextAlign.Center,
                                 color = if (registerMessage.startsWith("Registration successful"))
-                                    Color(0xFF006400) else Color.Red,
+                                    Pink else Color.Red, // Updated success text to Pink
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                             )
@@ -398,7 +404,7 @@ class RegisterActivity : ComponentActivity() {
                     ) {
                         Text(
                             text = "Already have an account? Sign In",
-                            color = Color.White,
+                            color = Pink, // Updated to Pink
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )
@@ -412,7 +418,7 @@ class RegisterActivity : ComponentActivity() {
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
                 fontSize = 12.sp,
-                color = Color(0xFF2E8B57)
+                color = DarkGray // Updated to DarkGray
             )
         }
     }
@@ -427,7 +433,7 @@ class RegisterActivity : ComponentActivity() {
                 .fillMaxWidth()
                 .height(56.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFF90EE90))
+                .background(Color.White), // Updated to white for consistency with text fields
         ) {
             Text(
                 text = selectedRole,
@@ -435,18 +441,18 @@ class RegisterActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .clickable { expanded = true }
                     .padding(16.dp),
-                color = Color.Black
+                color = DarkGray // Updated to DarkGray
             )
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF90EE90))
+                    .background(Color.White) // Updated to white
             ) {
                 roles.forEach { role ->
                     DropdownMenuItem(
-                        text = { Text(text = role, color = Color.Black) }, // Updated for Material3
+                        text = { Text(text = role, color = DarkGray) }, // Updated to DarkGray
                         onClick = {
                             onRoleSelected(role)
                             expanded = false
