@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.example.baseconverter.ui.theme.BaseConverterTheme
 import kotlinx.coroutines.launch
 
+// Color schem
+
 class MainActivity : ComponentActivity() {
     private lateinit var databaseManager: DatabaseManager
 
@@ -44,7 +47,7 @@ class MainActivity : ComponentActivity() {
             BaseConverterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFF98FB98)
+                    color = LightPink // Updated to LightPink
                 ) {
                     LoginScreen(
                         onRegisterClick = { navigateToRegisterScreen() },
@@ -93,7 +96,7 @@ class MainActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF90EE90)),
+                .background(LightPink), // Updated to LightPink
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -103,14 +106,14 @@ class MainActivity : ComponentActivity() {
                     .padding(top = 48.dp),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF2E8B57)
+                color = Pink // Updated to Pink
             )
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .padding(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF3CB371)),
+                colors = CardDefaults.cardColors(containerColor = LightYellow), // Updated to LightYellow
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -125,12 +128,12 @@ class MainActivity : ComponentActivity() {
                         text = "Welcome Back",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Pink // Updated to Pink
                     )
 
                     Text(
                         text = "Please sign in to continue",
-                        color = Color(0xFFE0FFE0),
+                        color = DarkGray, // Updated to DarkGray
                         fontSize = 16.sp
                     )
 
@@ -140,7 +143,7 @@ class MainActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Username",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier.padding(bottom = 4.dp),
                             fontSize = 14.sp
                         )
@@ -154,11 +157,11 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF90EE90),
-                                unfocusedContainerColor = Color(0xFF90EE90),
-                                errorContainerColor = Color(0xFFFFA07A),
-                                focusedBorderColor = Color(0xFF2E8B57),
-                                unfocusedBorderColor = Color(0xFF90EE90)
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorContainerColor = Color.White,
+                                focusedBorderColor = Pink, // Updated to Pink
+                                unfocusedBorderColor = DarkGray // Updated to DarkGray
                             ),
                             isError = !isUsernameValid,
                             keyboardOptions = KeyboardOptions(
@@ -169,7 +172,8 @@ class MainActivity : ComponentActivity() {
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
-                            singleLine = true
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = DarkGray) // Updated text color
                         )
                         if (!isUsernameValid) {
                             Text(
@@ -185,7 +189,7 @@ class MainActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Password",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier.padding(bottom = 4.dp),
                             fontSize = 14.sp
                         )
@@ -200,11 +204,11 @@ class MainActivity : ComponentActivity() {
                                 .height(56.dp),
                             visualTransformation = PasswordVisualTransformation(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF90EE90),
-                                unfocusedContainerColor = Color(0xFF90EE90),
-                                errorContainerColor = Color(0xFFFFA07A),
-                                focusedBorderColor = Color(0xFF2E8B57),
-                                unfocusedBorderColor = Color(0xFF90EE90)
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorContainerColor = Color.White,
+                                focusedBorderColor = Pink, // Updated to Pink
+                                unfocusedBorderColor = DarkGray // Updated to DarkGray
                             ),
                             isError = !isPasswordValid,
                             keyboardOptions = KeyboardOptions(
@@ -215,7 +219,8 @@ class MainActivity : ComponentActivity() {
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
                             shape = RoundedCornerShape(8.dp),
-                            singleLine = true
+                            singleLine = true,
+                            textStyle = LocalTextStyle.current.copy(color = DarkGray) // Updated text color
                         )
                         if (!isPasswordValid) {
                             Text(
@@ -231,7 +236,7 @@ class MainActivity : ComponentActivity() {
                     Column {
                         Text(
                             text = "Login as",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             modifier = Modifier.padding(bottom = 4.dp),
                             fontSize = 14.sp
                         )
@@ -277,7 +282,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E8B57)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
                         shape = RoundedCornerShape(24.dp),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 2.dp)
                     ) {
@@ -285,7 +290,7 @@ class MainActivity : ComponentActivity() {
                             text = "SIGN IN",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF98FB98)
+                            color = Color.White // Updated to white for contrast
                         )
                     }
 
@@ -293,7 +298,7 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text = loginMessage,
                             textAlign = TextAlign.Center,
-                            color = if (loginMessage.startsWith("Invalid")) Color.Red else Color(0xFF006400),
+                            color = if (loginMessage.startsWith("Invalid")) Color.Red else Pink, // Updated success message to Pink
                             fontSize = 14.sp,
                             modifier = Modifier.padding(top = 8.dp)
                         )
@@ -308,12 +313,12 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Text(
                             text = "Don't have an account? ",
-                            color = Color.White,
+                            color = DarkGray, // Updated to DarkGray
                             fontSize = 14.sp
                         )
                         Text(
                             text = "Register",
-                            color = Color(0xFFFFFFFF),
+                            color = Pink, // Updated to Pink
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline,
                             fontSize = 14.sp,
@@ -329,7 +334,7 @@ class MainActivity : ComponentActivity() {
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
                 fontSize = 12.sp,
-                color = Color(0xFF2E8B57)
+                color = DarkGray // Updated to DarkGray
             )
         }
     }
@@ -344,7 +349,7 @@ class MainActivity : ComponentActivity() {
                 .fillMaxWidth()
                 .height(56.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFF90EE90))
+                .background(Color.White), // Updated to white for consistency with text fields
         ) {
             Text(
                 text = selectedRole,
@@ -352,18 +357,18 @@ class MainActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .clickable { expanded = true }
                     .padding(16.dp),
-                color = Color.Black
+                color = DarkGray // Updated to DarkGray
             )
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF90EE90))
+                    .background(Color.White) // Updated to white
             ) {
                 roles.forEach { role ->
                     DropdownMenuItem(
-                        text = { Text(text = role, color = Color.Black) }, // Updated for Material3
+                        text = { Text(text = role, color = DarkGray) }, // Updated to DarkGray
                         onClick = {
                             onRoleSelected(role)
                             expanded = false
