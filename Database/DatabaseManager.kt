@@ -1,4 +1,4 @@
-package com.example.baseconverter
+package com.example.baseconvert
 
 import android.content.ContentValues
 import android.content.Context
@@ -16,11 +16,15 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         private const val COLUMN_USERNAME = "username"
         private const val COLUMN_EMAIL = "email"
         private const val COLUMN_PASSWORD_HASH = "password_hash"
+
+        // Conversion History Table
+        private const val TABLE_CONVERSION_HISTORY = "conversion_history"
+        private const val COLUMN_CONVERSION_ID = "id"
+        private const val COLUMN_CONVERTED_VALUE = "converted_value"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        // Create the users table with indexes for faster lookups
-        val createTable = """
+        val createUsersTable = """
             CREATE TABLE $TABLE_USERS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_USERNAME TEXT NOT NULL UNIQUE,
@@ -28,32 +32,36 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 $COLUMN_PASSWORD_HASH TEXT NOT NULL
             )
         """.trimIndent()
-        db.execSQL(createTable)
+        db.execSQL(createUsersTable)
 
-        // Add indexes for username and email to improve query performance
+        val createConversionHistoryTable = """
+            CREATE TABLE $TABLE_CONVERSION_HISTORY (
+                $COLUMN_CONVERSION_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COLUMN_CONVERTED_VALUE TEXT NOT NULL
+            )
+        """.trimIndent()
+        db.execSQL(createConversionHistoryTable)
+
         db.execSQL("CREATE INDEX idx_username ON $TABLE_USERS($COLUMN_USERNAME)")
         db.execSQL("CREATE INDEX idx_email ON $TABLE_USERS($COLUMN_EMAIL)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Drop the table and recreate it, including indexes
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_CONVERSION_HISTORY")
         db.execSQL("DROP INDEX IF EXISTS idx_username")
         db.execSQL("DROP INDEX IF EXISTS idx_email")
         onCreate(db)
     }
 
-    // Hash password using SHA-256
     private fun hashPassword(password: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }
     }
 
-    // Register a new user with hashed password
     fun registerUser(username: String, email: String, password: String): Boolean {
         val db = writableDatabase
         try {
-            // Hash the password using SHA-256
             val hashedPassword = hashPassword(password)
 
             val values = ContentValues().apply {
@@ -62,7 +70,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 put(COLUMN_PASSWORD_HASH, hashedPassword)
             }
 
-            // Insert the user and check if successful (username/email uniqueness enforced by UNIQUE constraint)
             val result = db.insertWithOnConflict(TABLE_USERS, null, values, SQLiteDatabase.CONFLICT_FAIL)
             return result != -1L
         } catch (e: Exception) {
@@ -73,10 +80,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
-    // Check if login credentials are valid
     fun loginUser(username: String, password: String): Boolean {
         val db = readableDatabase
-        var cursor: android.database.Cursor? = null // Declare cursor here
+        var cursor: android.database.Cursor? = null
         try {
             cursor = db.rawQuery(
                 "SELECT $COLUMN_PASSWORD_HASH FROM $TABLE_USERS WHERE $COLUMN_USERNAME = ?",
@@ -89,12 +95,11 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             }
             return false
         } finally {
-            cursor?.close() // Safely close cursor, check for null
+            cursor?.close()
             db.close()
         }
     }
 
-    // Check if username or email already exists
     fun userExists(username: String, email: String): Pair<Boolean, Boolean> {
         val db = readableDatabase
         var usernameCursor: android.database.Cursor? = null
@@ -103,7 +108,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             var usernameExists = false
             var emailExists = false
 
-            // Check username with index for performance
             usernameCursor = db.rawQuery(
                 "SELECT COUNT(*) FROM $TABLE_USERS WHERE $COLUMN_USERNAME = ?",
                 arrayOf(username)
@@ -112,7 +116,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 usernameExists = usernameCursor.getInt(0) > 0
             }
 
-            // Check email with index for performance
             emailCursor = db.rawQuery(
                 "SELECT COUNT(*) FROM $TABLE_USERS WHERE $COLUMN_EMAIL = ?",
                 arrayOf(email)
@@ -123,9 +126,44 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
             return Pair(usernameExists, emailExists)
         } finally {
-            usernameCursor?.close() // Safely close username cursor
-            emailCursor?.close() // Safely close email cursor
+            usernameCursor?.close()
+            emailCursor?.close()
             db.close()
         }
+    }
+
+    fun insertConversion(conversionValue: String): Boolean {
+        val db = writableDatabase
+        return try {
+            val values = ContentValues().apply {
+                put(COLUMN_CONVERTED_VALUE, conversionValue)
+            }
+            val result = db.insert(TABLE_CONVERSION_HISTORY, null, values)
+            result != -1L
+        } finally {
+            db.close()
+        }
+    }
+
+    fun getConversionHistory(): List<String> {
+        val db = readableDatabase
+        val conversionList = mutableListOf<String>()
+        val cursor = db.rawQuery("SELECT $COLUMN_CONVERTED_VALUE FROM $TABLE_CONVERSION_HISTORY", null)
+        cursor.use {
+            if (it.moveToFirst()) {
+                do {
+                    val conversion = it.getString(0)
+                    conversionList.add(conversion)
+                } while (it.moveToNext())
+            }
+        }
+        db.close()
+        return conversionList
+    }
+
+    fun clearConversionHistory() {
+        val db = writableDatabase
+        db.delete(TABLE_CONVERSION_HISTORY, null, null)
+        db.close()
     }
 }
