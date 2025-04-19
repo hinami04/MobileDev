@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -30,25 +29,29 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.baseconvert.ui.theme.BaseConvertTheme
+
 import kotlinx.coroutines.launch
+
+//LightYellow = Color(0xFFFFF5E4)
+//val Maroon = Color(0xFF660000)
+//val LightRed = Color(0xFFFFA8A8)
 
 class RegisterActivity : ComponentActivity() {
     private lateinit var databaseManager: DatabaseManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        databaseManager = DatabaseManager(this)
+        databaseManager = DatabaseManager()
 
         setContent {
-            BaseConvertTheme {
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF98FB98)
                 ) {
                     RegisterScreen()
                 }
-            }
+
         }
     }
 
@@ -77,18 +80,6 @@ class RegisterActivity : ComponentActivity() {
                 .background(color = Color(0xFFFFF5E4)),
             contentAlignment = Alignment.Center
         ) {
-
-            // App title at the top
-            /*Text(
-                text = "Base Converter",
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 40.dp),
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2E8B57) // Sea Green
-            )*/
-
             // Registration card
             Card(
                 modifier = Modifier
@@ -96,7 +87,7 @@ class RegisterActivity : ComponentActivity() {
                     .padding(16.dp)
                     .verticalScroll(scrollState),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFC4C4)
+                    containerColor = Color(0xFFFFA8A8)
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
@@ -134,7 +125,7 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
 
                         OutlinedTextField(
@@ -184,7 +175,7 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
 
                         OutlinedTextField(
@@ -234,7 +225,7 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
 
                         OutlinedTextField(
@@ -286,7 +277,7 @@ class RegisterActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 4.dp, start = 4.dp),
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
 
                         OutlinedTextField(
@@ -352,7 +343,7 @@ class RegisterActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .height(48.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFEE6983)
+                            containerColor = Color(0xFF660000)
                         ),
                         shape = RoundedCornerShape(24.dp),
                         elevation = ButtonDefaults.buttonElevation(
@@ -404,11 +395,11 @@ class RegisterActivity : ComponentActivity() {
                         )
                         Text(
                             text = "Sign In",
-                            color = Color(0xFF850E35),
+                            color = Color(0xFF660000),
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline,
                             fontSize = 14.sp,
-                            modifier = Modifier.clickable { finish() }
+                            modifier = Modifier.clickable { finish() } //terminate activity, back to log in page
                         )
                     }
                 }
@@ -481,7 +472,7 @@ class RegisterActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
-    BaseConvertTheme {
+
         RegisterActivity().RegisterScreen()
-    }
+
 }
