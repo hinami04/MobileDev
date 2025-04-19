@@ -20,27 +20,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 import java.util.*
 
-// Custom colors (unchanged)
-val MintGreen = Color(0xFF98FB98)
-val LightPink = Color(0xFFFFC4C4)
-val Pink = Color(0xFFEE6983)
-val Maroon = Color(0xFF850E35)
-val LightSalmon = Color(0xFFFFA07A)
+// Custom colors
 val LightYellow = Color(0xFFFFF5E4)
+val Maroon = Color(0xFF660000)
+val LightRed = Color(0xFFFFA8A8)
 
 class LandingPageActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
+            val isDarkThemeEnabled = true // Adjust this flag dynamically if needed
+            BaseConvertTheme(darkTheme = isDarkThemeEnabled) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -48,23 +48,12 @@ class LandingPageActivity : ComponentActivity() {
                     val username = intent.getStringExtra("logged_in_user") ?: "User"
                     LandingPage(
                         username = username,
-                        onProfileClick = { navigateToProfileScreen() },
-                        onSettingsClick = { navigateToSettingsScreen() },
+                        onMenuClick = { /* Handle Menu Click */ },
                         onBaseConvertClick = { navigateToBaseConverter() }
                     )
                 }
-
+            }
         }
-    }
-
-    private fun navigateToProfileScreen() {
-        val intent = Intent(this, ProfileActivity::class.java)
-        startActivity(intent)
-    }
-
-    private fun navigateToSettingsScreen() {
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
     }
 
     private fun navigateToBaseConverter() {
@@ -77,8 +66,7 @@ class LandingPageActivity : ComponentActivity() {
 @Composable
 fun LandingPage(
     username: String,
-    onProfileClick: () -> Unit,
-    onSettingsClick: () -> Unit,
+    onMenuClick: () -> Unit, // Callback for the menu icon
     onBaseConvertClick: () -> Unit
 ) {
     var showConversionDialog by remember { mutableStateOf(false) }
@@ -90,10 +78,10 @@ fun LandingPage(
     }
 
     Scaffold(
-        floatingActionButton = {
+        floatingActionButton = { // Add new conversion
             FloatingActionButton(
                 onClick = { showConversionDialog = true },
-                containerColor = Pink,
+                containerColor = Maroon,
                 contentColor = Color.White,
                 shape = CircleShape,
                 modifier = Modifier
@@ -107,25 +95,29 @@ fun LandingPage(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Pink)
-                    .padding(vertical = 16.dp, horizontal = 24.dp)
+                    .background(Maroon)
+                    .padding(vertical = 16.dp, horizontal = 20.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "$greeting, $username",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            Icons.Filled.Settings,
-                            contentDescription = "Settings",
-                            tint = Color.White
+                    // Greeting with custom 3-bar menu icon
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onMenuClick) { // Menu navigation
+                            Icon(
+                                painter = painterResource(id = R.drawable.menu_icon), // Replace with your drawable resource
+                                contentDescription = "Menu",
+                                tint = Color.White
+                            )
+                        }
+
+                        Text(
+                            text = "$greeting, $username",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
                         )
                     }
                 }
@@ -136,7 +128,7 @@ fun LandingPage(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(LightYellow),
+                .background(LightYellow.copy(alpha = 0.2f)),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -146,50 +138,19 @@ fun LandingPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(LightPink.copy(alpha = 0.4f))
+                        .background(LightRed.copy(alpha = 0.4f))
                         .padding(20.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "BaseConvert",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Maroon,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
                             text = "Simplify your number conversions",
                             fontSize = 16.sp,
                             color = Color.DarkGray,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 8.dp)
+                            textAlign = TextAlign.Center
                         )
                     }
-                }
-            }
-
-            // Quick Actions
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ActionCard(
-                        title = "Recent",
-                        subtitle = "View history",
-                        color = LightPink.copy(alpha = 0.4f),
-                        onClick = { /* Navigate to history */ },
-                        modifier = Modifier.weight(1f)
-                    )
-                    ActionCard(
-                        title = "Profile",
-                        subtitle = "Your stats",
-                        color = LightPink.copy(alpha = 0.4f),
-                        onClick = onProfileClick,
-                        modifier = Modifier.weight(1f)
-                    )
                 }
             }
 
@@ -199,8 +160,7 @@ fun LandingPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(LightPink.copy(alpha = 0.4f))
-                        //.shadow(2.dp, RoundedCornerShape(12.dp))
+                        .background(LightRed.copy(alpha = 0.4f))
                         .padding(16.dp)
                 ) {
                     Column {
@@ -224,8 +184,7 @@ fun LandingPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(LightPink.copy(alpha = 0.4f))
-                        //.shadow(2.dp, RoundedCornerShape(12.dp))
+                        .background(LightRed.copy(alpha = 0.4f))
                         .padding(16.dp)
                 ) {
                     Column(
@@ -291,7 +250,7 @@ fun ConversionOptionsDialog(
                 Button(
                     onClick = onBaseConvertClick,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LightPink,
+                        containerColor = LightRed,
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(12.dp),
@@ -308,7 +267,7 @@ fun ConversionOptionsDialog(
                 ) {
                     Text(
                         text = "Cancel",
-                        color = Pink,
+                        color = LightRed,
                         fontSize = 16.sp
                     )
                 }
@@ -329,7 +288,7 @@ fun ActionCard(
         modifier = modifier
             .height(100.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(color)
+            .background(LightRed.copy(alpha = 0.4f))
             .clickable(onClick = onClick)
             .padding(16.dp)
     ) {
@@ -360,7 +319,7 @@ fun FeatureItem(title: String, description: String) {
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(Maroon, CircleShape)
+                .background(LightRed, CircleShape)
         )
         Column(
             modifier = Modifier.padding(start = 12.dp)
@@ -384,6 +343,6 @@ fun FeatureItem(title: String, description: String) {
 @Composable
 fun LandingPagePreview() {
 
-        LandingPage(username = "User", {}, {}, {})
+        LandingPage(username = "User", {}, {})
 
 }
