@@ -17,16 +17,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 import java.lang.NumberFormatException
-
 
 class BaseConvertActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
-                BaseConverterScreen(onBackClick = { finish() })
-
+            BaseConvertTheme(darkTheme = true) { // Consistent theme setup
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    BaseConverterScreen(onBackClick = { finish() })
+                }
+            }
         }
     }
 }
@@ -35,21 +40,13 @@ class BaseConvertActivity : ComponentActivity() {
 @Composable
 fun BaseConverterScreen(onBackClick: () -> Unit) {
     var inputNumber by remember { mutableStateOf("") }
-    var selectedConversion by remember { mutableStateOf("Decimal to Octal") }
+    var fromBase by remember { mutableStateOf("Decimal") }
+    var toBase by remember { mutableStateOf("Octal") }
     var result by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    // Conversion options
-    val conversions = listOf(
-        "Decimal to Octal",
-        "Decimal to Hexadecimal",
-        "Octal to Decimal",
-        "Octal to Hexadecimal",
-        "Hexadecimal to Decimal",
-        "Hexadecimal to Octal"
-    )
+    val bases = listOf("Decimal", "Octal", "Hexadecimal")
 
-    // Function to perform conversion based on selected type
     fun convertNumber() {
         try {
             if (inputNumber.isBlank()) {
@@ -58,31 +55,23 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 return
             }
 
-            val resultValue = when (selectedConversion) {
-                "Decimal to Octal" -> inputNumber.toLong(10).toString(8)
-                "Decimal to Hexadecimal" -> inputNumber.toLong(10).toString(16)
-                "Octal to Decimal" -> inputNumber.toLong(8).toString(10)
-                "Octal to Hexadecimal" -> {
-                    val decimal = inputNumber.toLong(8)
-                    decimal.toString(16)
-                }
-                "Hexadecimal to Decimal" -> inputNumber.toLong(16).toString(10)
-                "Hexadecimal to Octal" -> {
-                    val decimal = inputNumber.toLong(16)
-                    decimal.toString(8)
-                }
-                else -> ""
+            val decimalValue = when (fromBase) {
+                "Decimal" -> inputNumber.toLong(10)
+                "Octal" -> inputNumber.toLong(8)
+                "Hexadecimal" -> inputNumber.toLong(16)
+                else -> throw IllegalArgumentException("Invalid fromBase")
             }
-            result = resultValue.uppercase()
+
+            result = when (toBase) {
+                "Decimal" -> decimalValue.toString(10)
+                "Octal" -> decimalValue.toString(8)
+                "Hexadecimal" -> decimalValue.toString(16)
+                else -> throw IllegalArgumentException("Invalid toBase")
+            }.uppercase()
+
             errorMessage = ""
         } catch (e: NumberFormatException) {
-            val base = when (selectedConversion) {
-                "Decimal to Octal", "Decimal to Hexadecimal" -> "Decimal"
-                "Octal to Decimal", "Octal to Hexadecimal" -> "Octal"
-                "Hexadecimal to Decimal", "Hexadecimal to Octal" -> "Hexadecimal"
-                else -> ""
-            }
-            errorMessage = "Invalid $base number"
+            errorMessage = "Invalid number for the selected base"
             result = ""
         } catch (e: Exception) {
             errorMessage = "Conversion error"
@@ -96,23 +85,22 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 title = { Text("Base Converter", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, "Back", tint = Color.White)
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFEE6983))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF660000))
             )
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color(0xFFFFF5E4).copy(alpha = 0.4f))
+                .background(Color(0xFFFFF5E4))
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Input and Conversion Selection Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -128,9 +116,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                             inputNumber = it
                             convertNumber()
                         },
-                        label = {
-                            Text("Enter ${selectedConversion.split(" ")[0]} Number")
-                        },
+                        label = { Text("Enter Number") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFFFC4C4),
@@ -138,29 +124,39 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                         )
                     )
 
-                    ConversionSelector(
-                        selectedConversion = selectedConversion,
-                        conversions = conversions,
-                        onConversionChange = {
-                            selectedConversion = it
+                    BaseSelector(
+                        label = "From Base",
+                        selectedBase = fromBase,
+                        bases = bases,
+                        onBaseChange = {
+                            fromBase = it
+                            convertNumber()
+                        }
+                    )
+
+                    BaseSelector(
+                        label = "To Base",
+                        selectedBase = toBase,
+                        bases = bases,
+                        onBaseChange = {
+                            toBase = it
                             convertNumber()
                         }
                     )
                 }
             }
 
-            // Result Display
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFC4C4).copy(alpha = 0.3f))
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFA8A8).copy(alpha = 0.3f))
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "${selectedConversion.split(" to ")[1]} Result",
+                        text = "Result",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF850E35)
@@ -175,7 +171,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                     if (errorMessage.isNotEmpty()) {
                         Text(
                             text = errorMessage,
-                            color = LightSalmon,
+                            color = Color.Red,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(top = 8.dp)
                         )
@@ -188,10 +184,11 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConversionSelector(
-    selectedConversion: String,
-    conversions: List<String>,
-    onConversionChange: (String) -> Unit
+fun BaseSelector(
+    label: String,
+    selectedBase: String,
+    bases: List<String>,
+    onBaseChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -200,18 +197,16 @@ fun ConversionSelector(
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selectedConversion,
+            value = selectedBase,
             onValueChange = {},
-            label = { Text("Conversion Type") },
+            label = { Text(label) },
             readOnly = true,
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color(0XFFFFC4C4),
+                focusedBorderColor = Color(0xFFFFC4C4),
                 cursorColor = Color(0xFF850E35)
             )
         )
@@ -219,11 +214,11 @@ fun ConversionSelector(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            conversions.forEach { conversion ->
+            bases.forEach { base ->
                 DropdownMenuItem(
-                    text = { Text(conversion) },
+                    text = { Text(base) },
                     onClick = {
-                        onConversionChange(conversion)
+                        onBaseChange(base)
                         expanded = false
                     }
                 )
@@ -235,7 +230,7 @@ fun ConversionSelector(
 @Preview(showBackground = true)
 @Composable
 fun BaseConverterPreview() {
-
+    BaseConvertTheme(darkTheme = false) {
         BaseConverterScreen(onBackClick = {})
-
+    }
 }
