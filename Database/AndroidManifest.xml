@@ -29,27 +29,25 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BaseConverter"/>
-
         <activity
-            android:name=".StudentDashboardActivity"
+            android:name=".NotesActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.BaseConverter"/>
+        <activity
+            android:name=".ProfileActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BaseConverter"/>
 
         <activity
-            android:name=".TutorDashboardActivity"
-            android:exported="true"
-            android:label="BaseConverter"
-            android:theme="@style/Theme.BaseConverter"/>
-
-        <activity
-            android:name=".StudentProfileActivity"
+            android:name=".LandingPageActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BaseConverter"/>
 
         <activity
-            android:name=".TutorProfileActivity"
+            android:name=".HistoryActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.BaseConverter"/>
