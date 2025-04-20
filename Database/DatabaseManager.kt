@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import java.security.MessageDigest
 
-class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+open class DatabaseManager(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "BaseConverterDB"
@@ -161,7 +161,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
-    fun registerUser(username: String, email: String, password: String): Pair<Boolean, String> {
+    open fun registerUser(username: String, email: String, password: String): Pair<Boolean, String> {
         return registerUserWithRole(username, email, password, "Student")
     }
 
@@ -178,7 +178,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 val storedRole = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE))
                 val inputHash = hashPassword(password)
                 val isPasswordCorrect = storedHash == inputHash
-                val isRoleCorrect = storedRole == role
+                val isRoleCorrect = role.isEmpty() || storedRole == role // Bypass role check if role is empty
                 Log.d(TAG, "Login check for $username: Password match: $isPasswordCorrect, Role match: $isRoleCorrect")
                 return Pair(isPasswordCorrect && isRoleCorrect, storedRole)
             }
@@ -193,12 +193,12 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
-    fun loginUser(username: String, password: String): Boolean {
-        val (success, _) = loginUserWithRole(username, password, "")
+    open fun loginUser(username: String, password: String): Boolean {
+        val (success, _) = loginUserWithRole(username, password, "") // Empty role to bypass role check
         return success
     }
 
-    fun getUserDetails(username: String): Triple<String, String, String>? {
+    open fun getUserDetails(username: String): Triple<String, String, String>? {
         val db = readableDatabase
         var cursor: android.database.Cursor? = null
         try {
@@ -222,7 +222,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
-    fun userExists(username: String, email: String): Pair<Boolean, Boolean> {
+    open fun userExists(username: String, email: String): Pair<Boolean, Boolean> {
         val db = readableDatabase
         var usernameCursor: android.database.Cursor? = null
         var emailCursor: android.database.Cursor? = null
@@ -403,7 +403,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val timestamp: Long
     )
 
-    fun getConversionHistory(username: String): List<ConversionEntry> {
+    open fun getConversionHistory(username: String): List<ConversionEntry> {
         val db = readableDatabase
         var cursor: android.database.Cursor? = null
         val conversions = mutableListOf<ConversionEntry>()
@@ -427,6 +427,24 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             return emptyList()
         } finally {
             cursor?.close()
+            db.close()
+        }
+    }
+
+    open fun clearConversionHistory(username: String): Boolean {
+        val db = writableDatabase
+        try {
+            val rowsAffected = db.delete(
+                TABLE_CONVERSIONS,
+                "$COLUMN_USER_USERNAME = ?",
+                arrayOf(username)
+            )
+            Log.d(TAG, "Cleared $rowsAffected conversion records for $username")
+            return rowsAffected > 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to clear conversion history for $username: ${e.message}", e)
+            return false
+        } finally {
             db.close()
         }
     }
