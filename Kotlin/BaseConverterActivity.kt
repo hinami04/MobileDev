@@ -33,11 +33,17 @@ import java.lang.NumberFormatException
 import android.content.SharedPreferences
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 
+// Define custom colors
+val Maroon = Color(0xFF660000)
+val LightPink = Color(0xFFFFF5E4)
+val Pink = Color(0xFFFFC4C4)
+val LightYellow = Color(0xFFFFFBE6)
+
 class BaseConverterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConverterTheme {
+            BaseConverterTheme(darkTheme = true) {
                 BaseConverterScreen(onBackClick = { finish() })
             }
         }
@@ -111,7 +117,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 "Decimal" -> decimalValue.toString(10)
                 "Binary" -> decimalValue.toString(2)
                 "Octal" -> decimalValue.toString(8)
-                "Hexadecimal" -> decimalValue.toString(16).uppercase() // Ensure Hex is uppercase
+                "Hexadecimal" -> decimalValue.toString(16).uppercase()
                 else -> throw IllegalArgumentException("Unknown base: $toBaseStr")
             }
 
@@ -143,17 +149,17 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 },
                 actions = {
                     TextButton(onClick = { showHistory = true }) {
-                        Text("History", color = Pink) // Updated to Pink
+                        Text("History", color = Pink)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Maroon) // Updated to Maroon
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Maroon)
             )
         }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LightPink) // Updated to LightPink
+                .background(LightPink)
                 .padding(paddingValues)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -163,7 +169,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = LightYellow), // Updated to LightYellow
+                colors = CardDefaults.cardColors(containerColor = LightYellow),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
@@ -176,14 +182,14 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                             inputNumber = it
                             convertNumber()
                         },
-                        label = { Text("Enter ${selectedConversion.split(" ")[0]} Number", color = DarkGray) }, // Updated label color
+                        label = { Text("Enter ${selectedConversion.split(" ")[0]} Number", color = DarkGray) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Pink, // Updated to Pink
-                            unfocusedBorderColor = DarkGray, // Updated to DarkGray
-                            cursorColor = Pink, // Updated to Pink
-                            focusedTextColor = DarkGray, // Updated text color
-                            unfocusedTextColor = DarkGray // Updated text color
+                            focusedBorderColor = Pink,
+                            unfocusedBorderColor = DarkGray,
+                            cursorColor = Pink,
+                            focusedTextColor = DarkGray,
+                            unfocusedTextColor = DarkGray
                         ),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = when (selectedConversion.split(" ")[0]) {
@@ -208,7 +214,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                     ) {
                         Button(
                             onClick = { inputNumber = ""; result = ""; errorMessage = "" },
-                            colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Clear", color = Color.White)
@@ -220,7 +226,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                                 Toast.makeText(context, "Result copied!", Toast.LENGTH_SHORT).show()
                             },
                             enabled = result.isNotEmpty(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Maroon), // Updated to Maroon
+                            colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Copy Result", color = Color.White)
@@ -233,7 +239,7 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = LightYellow), // Updated to LightYellow
+                colors = CardDefaults.cardColors(containerColor = LightYellow),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
@@ -244,19 +250,19 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                         text = "${selectedConversion.split(" to ")[1]} Result",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Pink // Updated to Pink
+                        color = Pink
                     )
                     Text(
                         text = result.ifEmpty { "—" },
                         fontSize = 32.sp,
-                        color = DarkGray, // Updated to DarkGray
+                        color = DarkGray,
                         modifier = Modifier.padding(top = 8.dp),
                         maxLines = 1
                     )
                     if (errorMessage.isNotEmpty()) {
                         Text(
                             text = errorMessage,
-                            color = Color.Red, // Kept red for error visibility
+                            color = Color.Red,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(top = 8.dp),
                             textAlign = TextAlign.Center
@@ -270,16 +276,16 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
         if (showHistory) {
             AlertDialog(
                 onDismissRequest = { showHistory = false },
-                title = { Text("Conversion History", color = Pink) }, // Updated to Pink
+                title = { Text("Conversion History", color = Pink) },
                 text = {
                     if (history.isEmpty()) {
-                        Text("No conversions yet", color = DarkGray) // Updated to DarkGray
+                        Text("No conversions yet", color = DarkGray)
                     } else {
                         LazyColumn {
                             items(history) { entry ->
                                 Text(
                                     text = entry,
-                                    color = DarkGray, // Updated to DarkGray
+                                    color = DarkGray,
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )
                             }
@@ -288,10 +294,10 @@ fun BaseConverterScreen(onBackClick: () -> Unit) {
                 },
                 confirmButton = {
                     TextButton(onClick = { showHistory = false }) {
-                        Text("Close", color = Pink) // Updated to Pink
+                        Text("Close", color = Pink)
                     }
                 },
-                containerColor = LightYellow // Updated to LightYellow
+                containerColor = LightYellow
             )
         }
     }
@@ -313,28 +319,28 @@ fun ConversionSelector(
         OutlinedTextField(
             value = selectedConversion,
             onValueChange = {},
-            label = { Text("Conversion Type", color = DarkGray) }, // Updated label color
+            label = { Text("Conversion Type", color = DarkGray) },
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Pink, // Updated to Pink
-                unfocusedBorderColor = DarkGray, // Updated to DarkGray
-                cursorColor = Pink, // Updated to Pink
-                focusedTextColor = DarkGray, // Updated text color
-                unfocusedTextColor = DarkGray // Updated text color
+                focusedBorderColor = Pink,
+                unfocusedBorderColor = DarkGray,
+                cursorColor = Pink,
+                focusedTextColor = DarkGray,
+                unfocusedTextColor = DarkGray
             )
         )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(LightYellow) // Updated to LightYellow
+            modifier = Modifier.background(LightYellow)
         ) {
             conversions.forEach { conversion ->
                 DropdownMenuItem(
-                    text = { Text(conversion, color = DarkGray) }, // Updated to DarkGray
+                    text = { Text(conversion, color = DarkGray) },
                     onClick = {
                         onConversionChange(conversion)
                         expanded = false
@@ -348,7 +354,7 @@ fun ConversionSelector(
 @Preview(showBackground = true)
 @Composable
 fun BaseConverterPreview() {
-    BaseConverterTheme {
+    BaseConverterTheme(darkTheme = true) {
         BaseConverterScreen(onBackClick = {})
     }
 }
