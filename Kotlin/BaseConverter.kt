@@ -24,7 +24,7 @@ class BaseConvertActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BaseConvertTheme(darkTheme = true) { // Consistent theme setup
+            BaseConvertTheme{ // Consistent theme setup
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
