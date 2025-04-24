@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 //LightYellow = Color(0xFFFFF5E4)
 //val Maroon = Color(0xFF660000)
@@ -26,7 +27,9 @@ class NotesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NotesScreen(onBackClick = { finish() })
+            BaseConvertTheme{
+                NotesScreen(onBackClick = { finish() })
+            }
         }
     }
 }
