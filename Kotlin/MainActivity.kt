@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +30,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 import kotlinx.coroutines.launch
 
 //LightYellow = Color(0xFFFFF5E4)
@@ -40,15 +44,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         databaseManager = DatabaseManager() // Initialize the database manager
         setContent {
-
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = Color(0xFF98FB98)
-            ) {
-                LoginScreen(
-                    onRegisterClick = { navigateToRegisterScreen() },
-                    onLoginSuccess = { username -> navigateToLandingPage(username) }
-                )
+            BaseConvertTheme(darkTheme = true) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFF98FB98)
+                ) {
+                    LoginScreen(
+                        onRegisterClick = { navigateToRegisterScreen() },
+                        onLoginSuccess = { username -> navigateToLandingPage(username) }
+                    )
+                }
             }
 
         }
@@ -80,12 +85,15 @@ class MainActivity : ComponentActivity() {
 
         // Background gradient effect with the same colors
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0xFFFFF5E4)),
+            modifier = Modifier,
             contentAlignment = Alignment.Center
         ) {
-
+            Image(
+                painter = painterResource(id = R.drawable.bg),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
             // App title at the top
             Text(
                 text = "Base Converter",
