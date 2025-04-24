@@ -10,8 +10,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,8 +34,7 @@ class DeveloperActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val isDarkThemeEnabled = true // Change this flag dynamically based on your preferences
-            BaseConvertTheme(darkTheme = isDarkThemeEnabled) {
+            BaseConvertTheme{
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -50,29 +51,27 @@ fun DeveloperScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()) // Enable scrolling
-            .background(color = Color(0xFFFFF5E4)), // Adapt to theme
+            .verticalScroll(rememberScrollState())
+            .background(color = Color(0xFFFFF5E4)),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Top area with dynamic theme support
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color(0xFF660000)) // Theme-aware primary color
+                .background(color = Color(0xFF660000))
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Meet the Team",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimary // Text color adapts to theme
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Team Members
         TeamMember(
             profileImage = R.drawable.x1,
             name = "Cudera, Xianne\n      Jewel S.",
@@ -91,19 +90,18 @@ fun DeveloperScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Team Vision Section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(color = Color(0xFF660000)) // Theme-aware secondary color
+                .background(color = Color(0xFF660000))
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Team Vision",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSecondary // Text color adapts to theme
+                color = MaterialTheme.colorScheme.onSecondary
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -121,26 +119,23 @@ fun DeveloperScreen() {
             style = MaterialTheme.typography.bodyLarge,
             color = Color.Black,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                //.background(color = Color(0xFFFFA8A8).copy(alpha = 0.4f))
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Team Mission Section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(color = Color(0xFF850E35)) // Theme-aware secondary color
+                .background(color = Color(0xFF850E35))
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Team Mission",
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSecondary // Text color adapts to theme
+                color = MaterialTheme.colorScheme.onSecondary
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -156,11 +151,9 @@ fun DeveloperScreen() {
         Text(
             text = "Our team is dedicated to building innovative and user-friendly solutions that make a difference in people's lives. We believe in continuous learning, collaboration, and striving for excellence in everything we do.",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black, // Theme-aware text color
+            color = Color.Black,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                //.background(color = Color(0xFFFFA8A8).copy(alpha = 0.4f))
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
@@ -172,13 +165,11 @@ fun TeamMember(profileImage: Int, name: String, bio: String, funFact: String) {
             .fillMaxWidth()
             .padding(10.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(color = Color(0xFFFFA8A8).copy(alpha = 0.4f)) // Theme-aware surface color
+            .background(color = Color(0xFFFFA8A8).copy(alpha = 0.4f))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = profileImage),
                 contentDescription = "Profile Picture of $name",
@@ -194,19 +185,17 @@ fun TeamMember(profileImage: Int, name: String, bio: String, funFact: String) {
             Text(
                 text = name,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Black // Adapt to theme primary color
+                color = Color.Black
             )
         }
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = bio,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground // Theme-aware text color
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
