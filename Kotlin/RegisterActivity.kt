@@ -1,9 +1,10 @@
 package com.example.baseconvert
 
 import android.os.Bundle
+import android.util.Patterns
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,8 +19,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -75,11 +78,15 @@ class RegisterActivity : ComponentActivity() {
 
         // Background with app branding
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0xFFFFF5E4)),
+            modifier = Modifier,
             contentAlignment = Alignment.Center
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.bg),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
             // Registration card
             Card(
                 modifier = Modifier
@@ -182,7 +189,7 @@ class RegisterActivity : ComponentActivity() {
                             value = email,
                             onValueChange = {
                                 email = it
-                                isEmailValid = email.isEmpty() || android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                                isEmailValid = email.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(email).matches()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
