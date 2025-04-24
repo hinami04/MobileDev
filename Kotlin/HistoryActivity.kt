@@ -13,8 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import android.content.Context
-import android.content.res.Resources
+import com.example.baseconvert.ui.theme.BaseConvertTheme
 
 //LightYellow = Color(0xFFFFF5E4)
 //val Maroon = Color(0xFF660000)
@@ -24,10 +23,12 @@ class HistoryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HistoryScreen(
-                onBackClick = { finish() }, // Calls finish() to close the activity
-                databaseManager = DatabaseManager()
-            )
+            BaseConvertTheme(darkTheme = true) {
+                HistoryScreen(
+                    onBackClick = { finish() }, // Calls finish() to close the activity
+                    databaseManager = DatabaseManager()
+                )
+            }
         }
     }
 
