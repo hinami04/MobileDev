@@ -26,16 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.baseconvert.ui.theme.BaseConvertTheme
 
-//LightYellow = Color(0xFFFFF5E4)
-//val Maroon = Color(0xFF660000)
-//val LightRed = Color(0xFFFFA8A8)
-
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val isDarkThemeEnabled = true // Adjust this flag dynamically if needed
-            BaseConvertTheme(darkTheme = isDarkThemeEnabled) {
+            BaseConvertTheme{
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background // Adapt to theme background color
@@ -144,7 +139,7 @@ fun ProfileScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFFF5E4))
+                    .background(Color(0xFFFFF5E4)) //light yellow
                     .padding(paddingValues)
                     .padding(16.dp)
             ) {
@@ -177,7 +172,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF660000))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF660000)) //maroon
                 ) {
                     Text(text = "Edit Profile", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
                 }
@@ -190,7 +185,7 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .height(80.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFFFFA8A8).copy(alpha = 0.4f))
+                        .background(Color(0xFFFFA8A8).copy(alpha = 0.4f)) //light red
                         .clickable(onClick = { onNotesClick() }),
                     contentAlignment = Alignment.Center
                 ) {
