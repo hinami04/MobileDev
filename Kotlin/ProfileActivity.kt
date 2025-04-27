@@ -11,35 +11,65 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.baseconvert.ui.theme.BaseConvertTheme
+import android.util.Log
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.baseconverter.DatabaseManager
 
 class ProfileActivity : ComponentActivity() {
+    private lateinit var databaseManager: DatabaseManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val username = intent.getStringExtra("logged_in_user") ?: "Unknown"
+        databaseManager = DatabaseManager(this)
+
         setContent {
-            BaseConvertTheme{
+            BaseConvertTheme(darkTheme = true) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background // Adapt to theme background color
+                    color = Color(0xFF98FB98)
                 ) {
                     ProfileScreen(
+                        username = username,
+                        databaseManager = databaseManager,
                         onLogoutConfirmed = { navigateToLoginScreen() },
-                        onBackClick = { navigateToLandingPage() },
-                        onNotesClick = { navigateToNotesPage() },
-                        onHistoryClick = { navigateToHistoryPage() }
+                        onBackClick = { onBackPressedDispatcher.onBackPressed() },
+                        onNotesClick = { navigateToNotesPage(username) },
+                        onHistoryClick = { navigateToHistoryPage(username) }
                     )
                 }
             }
@@ -47,107 +77,111 @@ class ProfileActivity : ComponentActivity() {
     }
 
     private fun navigateToLoginScreen() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
-    private fun navigateToLandingPage() {
-        val intent = Intent(this, LandingPageActivity::class.java)
-        startActivity(intent)
-        finish()
+    private fun navigateToHistoryPage(username: String) {
+        startActivity(
+            Intent(this, HistoryActivity::class.java)
+                .putExtra("logged_in_user", username)
+        )
     }
 
-    private fun navigateToHistoryPage(){
-        val intent = Intent(this, HistoryActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    private fun navigateToNotesPage(){
-        val intent = Intent(this, NotesActivity::class.java)
-        startActivity(intent)
-        finish()
+    private fun navigateToNotesPage(username: String) {
+        startActivity(
+            Intent(this, NotesActivity::class.java)
+                .putExtra("logged_in_user", username)
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    username: String,
+    databaseManager: DatabaseManager,
     onLogoutConfirmed: () -> Unit,
     onBackClick: () -> Unit,
     onNotesClick: () -> Unit,
     onHistoryClick: () -> Unit
 ) {
-    var username by remember { mutableStateOf("john_doe") }
-    var email by remember { mutableStateOf("john_doe@example.com") }
-    var isEditing by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    val LightYellow = Color(0xFFFFF5E4)
+    val Maroon = Color(0xFF660000)
+    val Pink = Color(0xFFFFC1CC)
+
+    LaunchedEffect(username) {
+        try {
+            databaseManager.getUserDetails(username)?.let { details ->
+                email = details.second
+            } ?: run {
+                email = "No email available"
+                Log.w("ProfileScreen", "No user details found for $username")
+            }
+        } catch (e: Exception) {
+            Log.e("ProfileScreen", "Error loading user details for $username", e)
+            email = "Error loading email"
+        }
+    }
 
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Logout Confirmation") },
-            text = { Text("Are you sure you want to logout?") },
+            title = { Text("Logout Confirmation", color = Color.DarkGray) },
+            text = { Text("Are you sure you want to logout?", color = Color.DarkGray) },
             confirmButton = {
                 Button(
                     onClick = {
                         showLogoutDialog = false
                         onLogoutConfirmed()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Maroon)
                 ) {
-                    Text("Yes")
+                    Text("Yes", color = Color.White)
                 }
             },
             dismissButton = {
-                Button(
-                    onClick = { showLogoutDialog = false }
-                ) {
-                    Text("No")
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("No", color = Pink)
                 }
-            }
+            },
+            containerColor = Color.White.copy(alpha = 0.7f)
         )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = username, color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text(username, color = Color.DarkGray, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { onBackClick() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back),
-                            contentDescription = "Back",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Maroon)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Handle settings click */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Settings",
-                            tint = Color.White
-                        )
+                    IconButton(onClick = { /* Settings? */ }) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Maroon)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF660000))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.7f))
             )
-        },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFFFF5E4)) //light yellow
-                    .padding(paddingValues)
-                    .padding(16.dp)
-            ) {
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(LightYellow)
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            Column {
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
-                        painter = painterResource(id = R.drawable.x1), // Replace with your drawable resource
+                        painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .size(100.dp)
@@ -155,68 +189,72 @@ fun ProfileScreen(
                             .background(Color.Gray),
                         contentScale = ContentScale.Crop
                     )
-
                     Spacer(modifier = Modifier.width(16.dp))
-
-                    Text(
-                        text = email,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFF660000)
-                    )
+                    Text(email, style = MaterialTheme.typography.bodyLarge, color = Maroon)
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Button(
-                    onClick = { isEditing = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF660000)) //maroon
+                    onClick = { /* Edit profile */ },
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Maroon)
                 ) {
-                    Text(text = "Edit Profile", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimary)
+                    Text("Edit Profile", fontSize = 18.sp, color = Color.White)
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Rounded corner boxes for 'Notes' and 'History'
-                Box(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFFFFA8A8).copy(alpha = 0.4f)) //light red
-                        .clickable(onClick = { onNotesClick() }),
-                    contentAlignment = Alignment.Center
+                        .clickable(onClick = onNotesClick),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.7f))
                 ) {
-                    Text(text = "Notes", style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Notes", style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
+                    }
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFFFFA8A8).copy(alpha = 0.4f))
-                        .clickable(onClick = { onHistoryClick() }),
-                    contentAlignment = Alignment.Center
+                        .clickable(onClick = onHistoryClick),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.7f))
                 ) {
-                    Text(text = "History", style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("History", style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
+                    }
                 }
+                Spacer(modifier = Modifier.height(24.dp))
+                Text("© 2025 Base Converter", modifier = Modifier.align(Alignment.CenterHorizontally))
             }
         }
-    )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(
-        onLogoutConfirmed = {},
-        onBackClick = {},
-        onNotesClick = {},
-        onHistoryClick = {}
-    )
+    BaseConvertTheme(darkTheme = true) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color(0xFF98FB98)
+        ) {
+            ProfileScreen(
+                username = "PreviewUser",
+                databaseManager = object : DatabaseManager(null) {
+                    override fun getUserDetails(username: String): Triple<String, String, String>? {
+                        // Triple<username, email, password> for preview purposes
+                        return Triple(username, "preview@example.com", "password123")
+                    }
+                },
+                onLogoutConfirmed = {},
+                onBackClick = {},
+                onNotesClick = {},
+                onHistoryClick = {}
+            )
+        }
+    }
 }
+
