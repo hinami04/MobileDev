@@ -28,12 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.compose.rememberNavController
 import com.example.baseconvert.ui.theme.BaseConvertTheme
 import kotlinx.coroutines.launch
 import java.util.*
 
-// Define colors for the new design0xFFFFFFFF
+// Define colors for the new design
 val GradientStart = Color(0xFF800000) // Maroon
 val GradientEnd = Color(0xFFFFFFFF)   // White
 val FrostedBackground = Color.White.copy(alpha = 0.1f)
@@ -71,7 +70,6 @@ fun LandingPage(
     username: String,
     onBaseConvertClick: () -> Unit
 ) {
-    val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -104,7 +102,7 @@ fun LandingPage(
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
                                 Icons.Default.Menu,
-                                contentDescription = "Open Menu",
+                                contentDescription = "Open टीमenu",
                                 tint = Color.White
                             )
                         }
@@ -112,7 +110,7 @@ fun LandingPage(
                 )
             },
             bottomBar = {
-                BottomNavigationBar(navController)
+                BottomNavigationBar(username = username)
             },
             floatingActionButton = {
                 val scale by animateFloatAsState(
@@ -214,6 +212,7 @@ fun DrawerContent(username: String, onClose: () -> Unit) {
         DrawerItem("Logout", Icons.Default.ExitToApp) {
             val context = LocalContext.current
             Intent(context, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 context.startActivity(this)
             }
             (context as? ComponentActivity)?.finish()
@@ -241,28 +240,40 @@ fun DrawerItem(text: String, icon: androidx.compose.ui.graphics.vector.ImageVect
 }
 
 @Composable
-fun BottomNavigationBar(navController: androidx.navigation.NavHostController) {
+fun BottomNavigationBar(username: String) {
+    val context = LocalContext.current
+
     NavigationBar(
         containerColor = FrostedBackground,
         contentColor = Color.White
     ) {
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = navController.currentDestination?.route == "home",
-            onClick = { navController.navigate("home") }
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home", tint = Color.Black) },
+            label = { Text("Home", color = Color.Black) },
+            selected = true, // Home is the current screen
+            onClick = { /* Already on Home, no action needed */ }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") },
-            selected = navController.currentDestination?.route == "profile",
-            onClick = { navController.navigate("profile") }
+            icon = { Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.Black) },
+            label = { Text("Profile", color = Color.Black) },
+            selected = false,
+            onClick = {
+                Intent(context, ProfileActivity::class.java).apply {
+                    putExtra("logged_in_user", username)
+                    context.startActivity(this)
+                }
+            }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.History, contentDescription = "History") },
-            label = { Text("History") },
-            selected = navController.currentDestination?.route == "history",
-            onClick = { navController.navigate("history") }
+            icon = { Icon(Icons.Default.History, contentDescription = "History", tint = Color.Black) },
+            label = { Text("History", color = Color.Black) },
+            selected = false,
+            onClick = {
+                Intent(context, HistoryActivity::class.java).apply {
+                    putExtra("logged_in_user", username)
+                    context.startActivity(this)
+                }
+            }
         )
     }
 }
@@ -443,7 +454,7 @@ fun FeatureItem(title: String, description: String) {
 @Preview(showBackground = true)
 @Composable
 fun LandingPagePreview() {
-    BaseConvertTheme{
+    BaseConvertTheme {
         LandingPage(username = "User", {})
     }
 }
