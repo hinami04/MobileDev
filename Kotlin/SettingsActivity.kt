@@ -7,192 +7,495 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.baseconvert.ui.theme.BaseConvertTheme
+import com.example.baseconverter.DatabaseManager
+import kotlinx.coroutines.launch
 
-class SettingsActivity : ComponentActivity() {
+class RegisterActivity : ComponentActivity() {
+    private lateinit var databaseManager: DatabaseManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        databaseManager = DatabaseManager(this)
         setContent {
-            BaseConvertTheme {
+            BaseConvertTheme(darkTheme = true) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = Color(0xFF98FB98) // PaleGreen, matching login page
                 ) {
-                    SettingsScreen(
-                        navigateToPreviousPage = { finish() },
-                        navigateToDeveloperScreen = { navigateToDeveloperScreen() }
+                    RegisterScreen(
+                        databaseManager = databaseManager,
+                        onLoginClick = { navigateToLoginScreen() }
                     )
                 }
             }
         }
     }
 
-    private fun navigateToDeveloperScreen() {
-        val intent = Intent(this, DeveloperActivity::class.java)
+    private fun navigateToLoginScreen() {
+        val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 }
 
 @Composable
-fun SettingsScreen(
-    navigateToPreviousPage: () -> Unit,
-    navigateToDeveloperScreen: () -> Unit
-) {
-    var isDarkThemeEnabled by remember { mutableStateOf(false) }
-    var isNotificationsEnabled by remember { mutableStateOf(true) }
-    var fontSize by remember { mutableStateOf("Medium") }
+fun RegisterScreen(databaseManager: DatabaseManager, onLoginClick: () -> Unit) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var registerMessage by remember { mutableStateOf("") }
+    var isUsernameValid by remember { mutableStateOf(true) }
+    var isPasswordValid by remember { mutableStateOf(true) }
+    var isConfirmPasswordValid by remember { mutableStateOf(true) }
+    var isEmailValid by remember { mutableStateOf(true) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp) // Adds margin to the sides
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp), // Adjusts vertical padding
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.arrow_back),
-                contentDescription = "Back",
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable(onClick = navigateToPreviousPage)
-            )
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
-            Text(text = "Settings", style = MaterialTheme.typography.headlineSmall)
+    // Define colors to match login page
+    val lightYellow = Color(0xFFFFF5E4)
+    val maroon = Color(0xFF660000)
+    //val lightRed = Color(0xFFFFA8A8)
+    val pink = Color(0xFFFFC1CC) // Assuming Pink from original code
 
-            Image(
-                painter = painterResource(id = R.drawable.search),
-                contentDescription = "Search",
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable(onClick = { /* Search action */ })
-            )
+    // Helper function to validate and handle registration (non-composable)
+    fun validateAndRegister() {
+        if (username.isEmpty()) {
+            registerMessage = "Username cannot be empty"
+            return
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            registerMessage = "Please enter a valid email address"
+            return
+        }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(), // This will also follow the column padding
-            verticalArrangement = Arrangement.Top
-        ) {
-            item {
-                Text(
-                    text = "Account Information",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Public Profile")
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Enable Notifications")
-                    Switch(
-                        checked = isNotificationsEnabled,
-                        onCheckedChange = { isNotificationsEnabled = it }
-                    )
+        if (password.length < 6) {
+            registerMessage = "Password must be at least 6 characters"
+            return
+        }
+
+        if (password != confirmPassword) {
+            registerMessage = "Passwords do not match"
+            return
+        }
+
+        if (isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid) {
+            scope.launch {
+                val (usernameExists, emailExists) = databaseManager.userExists(username, email)
+                when {
+                    usernameExists -> registerMessage = "Username already exists"
+                    emailExists -> registerMessage = "Email already exists"
+                    else -> {
+                        val (success, message) = databaseManager.registerUser(username, email, password)
+                        registerMessage = if (success) "Registration successful! You can now sign in." else "Registration failed: $message"
+                        if (success) {
+                            onLoginClick()
+                        }
+                    }
                 }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Appearance and Management",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Dark Mode")
-                    Switch(
-                        checked = isDarkThemeEnabled,
-                        onCheckedChange = { isDarkThemeEnabled = it }
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Font Size")
-                    Text(text = fontSize)
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Privacy Policy and Legal Regulations",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                // magsearch pako unsay iadd diri nga part.
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "About Developer",
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { navigateToDeveloperScreen() }
-                        .padding(vertical = 8.dp)
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Log Out",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { /* Log out action */ }
-                        .padding(vertical = 8.dp)
-                )
-            }
+        } else {
+            registerMessage = "Please fill in all fields correctly"
         }
     }
-}
 
+    // Background with app branding
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.bg),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // App title at the top
+
+        // Registration card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(16.dp)
+                .verticalScroll(scrollState),
+            colors = CardDefaults.cardColors(
+                containerColor = (Color(0xFFFFCA28)).copy(alpha = 0.8f) // Semi-transparent yellow
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 8.dp
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Registration header
+                Text(
+                    text = "Create Account",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Text(
+                    text = "Please fill in your details",
+                    color = Color.Black,
+                    fontSize = 16.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Username field
+                Column {
+                    Text(
+                        text = "Username",
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp, start = 4.dp),
+                        fontSize = 18.sp
+                    )
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {
+                            username = it
+                            isUsernameValid = username.isNotEmpty()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        placeholder = { Text("Enter username") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = lightYellow,
+                            unfocusedContainerColor = Color.White,
+                            errorContainerColor = Color(0xFFFFA07A),
+                            focusedBorderColor = pink,
+                            unfocusedBorderColor = Color.DarkGray,
+                            cursorColor = pink,
+                            focusedTextColor = Color.DarkGray,
+                            unfocusedTextColor = Color.DarkGray
+                        ),
+                        isError = !isUsernameValid,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        singleLine = true
+                    )
+
+                    if (!isUsernameValid) {
+                        Text(
+                            text = "Username cannot be empty",
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                        )
+                    }
+                }
+
+                // Email field
+                Column {
+                    Text(
+                        text = "Email",
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp, start = 4.dp),
+                        fontSize = 18.sp
+                    )
+
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = {
+                            email = it
+                            isEmailValid = email.isEmpty() || android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        placeholder = { Text("Enter email address") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = lightYellow,
+                            unfocusedContainerColor = Color.White,
+                            errorContainerColor = Color(0xFFFFA07A),
+                            focusedBorderColor = pink,
+                            unfocusedBorderColor = Color.DarkGray,
+                            cursorColor = pink,
+                            focusedTextColor = Color.DarkGray,
+                            unfocusedTextColor = Color.DarkGray
+                        ),
+                        isError = !isEmailValid,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        singleLine = true
+                    )
+
+                    if (!isEmailValid) {
+                        Text(
+                            text = "Invalid email address",
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                        )
+                    }
+                }
+
+                // Password field
+                Column {
+                    Text(
+                        text = "Password",
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp, start = 4.dp),
+                        fontSize = 18.sp
+                    )
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = {
+                            password = it
+                            isPasswordValid = password.length >= 6
+                            isConfirmPasswordValid = confirmPassword.isEmpty() || confirmPassword == password
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        placeholder = { Text("Create a password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = lightYellow,
+                            unfocusedContainerColor = Color.White,
+                            errorContainerColor = Color(0xFFFFA07A),
+                            focusedBorderColor = pink,
+                            unfocusedBorderColor = Color.DarkGray,
+                            cursorColor = pink,
+                            focusedTextColor = Color.DarkGray,
+                            unfocusedTextColor = Color.DarkGray
+                        ),
+                        isError = !isPasswordValid,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        singleLine = true
+                    )
+
+                    if (!isPasswordValid) {
+                        Text(
+                            text = "Password must be at least 6 characters",
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                        )
+                    }
+                }
+
+                // Confirm Password field
+                Column {
+                    Text(
+                        text = "Confirm Password",
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp, start = 4.dp),
+                        fontSize = 18.sp
+                    )
+
+                    OutlinedTextField(
+                        value = confirmPassword,
+                        onValueChange = {
+                            confirmPassword = it
+                            isConfirmPasswordValid = it == password
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        placeholder = { Text("Re-enter your password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = lightYellow,
+                            unfocusedContainerColor = Color.White,
+                            errorContainerColor = Color(0xFFFFA07A),
+                            focusedBorderColor = pink,
+                            unfocusedBorderColor = Color.DarkGray,
+                            cursorColor = pink,
+                            focusedTextColor = Color.DarkGray,
+                            unfocusedTextColor = Color.DarkGray
+                        ),
+                        isError = !isConfirmPasswordValid,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                keyboardController?.hide()
+                                validateAndRegister()
+                            }
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        singleLine = true
+                    )
+
+                    if (!isConfirmPasswordValid) {
+                        Text(
+                            text = "Passwords do not match",
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Register button
+                Button(
+                    onClick = {
+                        keyboardController?.hide()
+                        validateAndRegister()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = maroon
+                    ),
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 2.dp
+                    )
+                ) {
+                    Text(
+                        text = "CREATE ACCOUNT",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                // Register message
+                if (registerMessage.isNotEmpty()) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.7f) // Semi-transparent white
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = registerMessage,
+                            textAlign = TextAlign.Center,
+                            color = if (registerMessage.startsWith("Registration successful")) maroon else Color.Red,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                        )
+                    }
+                }
+
+                // Back to login button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Already have an account? ",
+                        color = Color.DarkGray,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = "Sign In",
+                        color = maroon,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        fontSize = 14.sp,
+                        modifier = Modifier.clickable { onLoginClick() }
+                    )
+                }
+            }
+        }
+
+        // Footer text
+        Text(
+            text = "© 2025 Base Converter",
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
+            fontSize = 12.sp,
+            color = Color(0xFF0A1F44) // Matching login page
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
-fun SettingsScreenPreview() {
-    BaseConvertTheme {
-        SettingsScreen({}, {})
+fun RegisterScreenPreview() {
+    BaseConvertTheme(darkTheme = true) {
+        RegisterScreen(
+            databaseManager = object : DatabaseManager(null) {
+                override fun userExists(username: String, email: String): Pair<Boolean, Boolean> {
+                    return Pair(false, false)
+                }
+
+                override fun registerUser(username: String, email: String, password: String): Pair<Boolean, String> {
+                    return Pair(true, "Success")
+                }
+            },
+            onLoginClick = {}
+        )
     }
 }
